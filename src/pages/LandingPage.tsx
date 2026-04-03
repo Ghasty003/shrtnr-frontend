@@ -5,22 +5,8 @@ import {
   AnimatePresence,
   type Variants,
 } from "motion/react";
-
-interface ShortenResult {
-  shortUrl: string;
-  originalUrl: string;
-  slug: string;
-  clicks: number;
-  createdAt: string;
-}
-
-interface UseShortenUrlReturn {
-  shortenUrl: (url: string) => Promise<void>;
-  result: ShortenResult | null;
-  loading: boolean;
-  error: string | null;
-  reset: () => void;
-}
+import { useShortUrl } from "@/hooks/useShortUrl";
+import { type ShortUrl } from "@/api/url";
 
 interface FeatureCardProps {
   icon: ReactNode;
@@ -44,45 +30,6 @@ interface WorkflowStep {
 interface FooterColumn {
   heading: string;
   items: string[];
-}
-
-// API Integration Hook
-function useShortenUrl(): UseShortenUrlReturn {
-  const [result, setResult] = useState<ShortenResult | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const shortenUrl = async (url: string): Promise<void> => {
-    setLoading(true);
-    setError(null);
-    try {
-      // TODO: Replace with actual API endpoint
-      // const response = await fetch("https://api.shrtnr.dev/v1/shorten", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json", Authorization: `Bearer ${API_KEY}` },
-      //   body: JSON.stringify({ url }),
-      // });
-      // const data: ShortenResult = await response.json();
-      // setResult(data);
-
-      // Mock response for UI development
-      await new Promise<void>((r) => setTimeout(r, 900));
-      const slug = Math.random().toString(36).substring(2, 10);
-      setResult({
-        shortUrl: `shrtnr.dev/${slug}`,
-        originalUrl: url,
-        slug,
-        clicks: 0,
-        createdAt: new Date().toISOString(),
-      });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return { shortenUrl, result, loading, error, reset: () => setResult(null) };
 }
 
 // Animation Variants
@@ -289,11 +236,14 @@ function Navbar() {
 }
 
 // URL Result Card
-function UrlCard({ result }: { result: ShortenResult }) {
+function UrlCard({ result }: { result: ShortUrl }) {
   const [copied, setCopied] = useState<boolean>(false);
 
+  const shortUrl = `${import.meta.env.VITE_API_URL}/${result.short_code}`;
+  console.log({ shortUrl });
+
   const handleCopy = (): void => {
-    navigator.clipboard.writeText(result.shortUrl).catch(() => {});
+    navigator.clipboard.writeText(shortUrl).catch(() => {});
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -315,12 +265,12 @@ function UrlCard({ result }: { result: ShortenResult }) {
         </div>
         <div className="min-w-0">
           <p className="text-sm font-semibold text-white truncate">
-            {result.shortUrl}
+            {shortUrl}
           </p>
           <p className="text-xs truncate mt-0.5" style={{ color: "#71717A" }}>
             Redirects to:{" "}
-            {result.originalUrl.replace(/^https?:\/\//, "").substring(0, 48)}
-            {result.originalUrl.length > 55 ? "…" : ""}
+            {result.long_url.replace(/^https?:\/\//, "").substring(0, 48)}
+            {result.long_url.length > 55 ? "…" : ""}
           </p>
         </div>
       </div>
@@ -345,11 +295,13 @@ function UrlCard({ result }: { result: ShortenResult }) {
 // Hero Section
 function HeroSection() {
   const [inputUrl, setInputUrl] = useState<string>("");
-  const { shortenUrl, result, loading, error } = useShortenUrl();
+  const { shorten, result, isPending, isError, error, reset } = useShortUrl();
 
   const handleShorten = (): void => {
-    if (!inputUrl.trim()) return;
-    shortenUrl(inputUrl.trim());
+    const trimmed = inputUrl.trim();
+    if (!trimmed) return;
+    reset();
+    shorten(trimmed);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
@@ -430,9 +382,9 @@ function HeroSection() {
           />
           <motion.button
             onClick={handleShorten}
-            disabled={loading || !inputUrl.trim()}
-            whileHover={{ opacity: loading ? 1 : 0.92 }}
-            whileTap={{ scale: loading ? 1 : 0.97 }}
+            disabled={isPending || !inputUrl.trim()}
+            whileHover={{ opacity: isPending ? 1 : 0.92 }}
+            whileTap={{ scale: isPending ? 1 : 0.97 }}
             transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
             className="shrink-0 px-5 py-2.25 rounded-lg text-sm font-semibold text-white disabled:opacity-50 transition-opacity"
             style={{
@@ -441,7 +393,7 @@ function HeroSection() {
               minWidth: "88px",
             }}
           >
-            {loading ? (
+            {isPending ? (
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
@@ -454,14 +406,14 @@ function HeroSection() {
         </div>
 
         <AnimatePresence>
-          {error && (
+          {isError && error && (
             <motion.p
               initial={{ opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               className="text-xs mt-2 text-red-400 text-left px-1"
             >
-              {error}
+              {error.message}
             </motion.p>
           )}
         </AnimatePresence>
@@ -470,8 +422,9 @@ function HeroSection() {
           {result && <UrlCard result={result} />}
         </AnimatePresence>
 
+        {/* Placeholder shown before any request is made */}
         <AnimatePresence>
-          {!result && !loading && (
+          {!result && !isPending && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -703,7 +656,7 @@ function Footer() {
       }}
     >
       <div>
-        <span className="text-white font-bold text-[16px]">Shrtnr</span>
+        <span className="text-white font-bold text-[1.5">Shrtnr</span>
         <p
           className="text-[11px] tracking-widest mt-2"
           style={{ color: "#3F3F46" }}
