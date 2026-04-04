@@ -171,67 +171,178 @@ const IconCheck = () => (
   </svg>
 );
 
+// Hamburger icon — two states handled by parent
+const IconMenu = () => (
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <line x1="3" y1="6" x2="21" y2="6" />
+    <line x1="3" y1="12" x2="21" y2="12" />
+    <line x1="3" y1="18" x2="21" y2="18" />
+  </svg>
+);
+
+const IconX = () => (
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <line x1="18" y1="6" x2="6" y2="18" />
+    <line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+);
+
 // Navbar
 function Navbar() {
   const navItems: string[] = ["Features", "API", "Docs"];
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
 
   return (
-    <motion.nav
-      initial={{ opacity: 0, y: -16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-4.5"
-      style={{
-        background: "rgba(14,14,14,0.85)",
-        backdropFilter: "blur(20px)",
-        borderBottom: "1px solid rgba(73,72,71,0.15)",
-      }}
-    >
-      <span className="text-white font-bold text-[17px] tracking-tight">
-        Shrtnr
-      </span>
+    <>
+      <motion.nav
+        initial={{ opacity: 0, y: -16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-8 py-4.5"
+        style={{
+          background: "rgba(14,14,14,0.85)",
+          backdropFilter: "blur(20px)",
+          borderBottom: "1px solid rgba(73,72,71,0.15)",
+        }}
+      >
+        <span className="text-white font-bold text-[17px] tracking-tight">
+          Shrtnr
+        </span>
 
-      <div className="flex items-center gap-7">
-        {navItems.map((item, i) => (
+        {/* Desktop nav links — hidden on mobile */}
+        <div className="hidden md:flex items-center gap-7">
+          {navItems.map((item, i) => (
+            <motion.a
+              key={item}
+              href="#"
+              className="text-sm font-medium transition-colors duration-150"
+              style={{
+                color: i === 0 ? "#CBD5E1" : "#71717A",
+                textDecoration: i === 0 ? "underline" : "none",
+                textUnderlineOffset: "4px",
+                textDecorationColor: "rgba(189,157,255,0.5)",
+              }}
+              whileHover={{ color: "#CBD5E1" }}
+            >
+              {item}
+            </motion.a>
+          ))}
+        </div>
+
+        {/* Desktop auth — hidden on mobile */}
+        <div className="hidden md:flex items-center gap-4">
           <motion.a
-            key={item}
             href="#"
-            className="text-sm font-medium transition-colors duration-150"
-            style={{
-              color: i === 0 ? "#CBD5E1" : "#71717A",
-              textDecoration: i === 0 ? "underline" : "none",
-              textUnderlineOffset: "4px",
-              textDecorationColor: "rgba(189,157,255,0.5)",
-            }}
-            whileHover={{ color: "#CBD5E1" }}
+            className="text-sm font-medium text-[#71717A] hover:text-[#CBD5E1] transition-colors duration-150"
           >
-            {item}
+            Login
           </motion.a>
-        ))}
-      </div>
+          <motion.button
+            whileHover={{ opacity: 0.9, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
+            className="px-4 py-1.75 text-sm font-medium text-white rounded-xl border"
+            style={{
+              background: "linear-gradient(135deg, #BD9DFF, #8A4CFC)",
+              borderColor: "transparent",
+              boxShadow: "0 0 20px rgba(189,157,255,0.15)",
+            }}
+          >
+            Sign Up
+          </motion.button>
+        </div>
 
-      <div className="flex items-center gap-4">
-        <motion.a
-          href="#"
-          className="text-sm font-medium text-[#71717A] hover:text-[#CBD5E1] transition-colors duration-150"
+        {/* Hamburger — mobile only */}
+        <button
+          onClick={() => setMenuOpen((prev) => !prev)}
+          className="md:hidden flex items-center justify-center w-9 h-9 rounded-lg transition-colors duration-150"
+          style={{ color: "#71717A", background: "rgba(73,72,71,0.15)" }}
+          aria-label="Toggle menu"
         >
-          Login
-        </motion.a>
-        <motion.button
-          whileHover={{ opacity: 0.9, scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
-          className="px-4 py-1.75 text-sm font-medium text-white rounded-xl border"
-          style={{
-            background: "linear-gradient(135deg, #BD9DFF, #8A4CFC)",
-            borderColor: "transparent",
-            boxShadow: "0 0 20px rgba(189,157,255,0.15)",
-          }}
-        >
-          Sign Up
-        </motion.button>
-      </div>
-    </motion.nav>
+          {menuOpen ? <IconX /> : <IconMenu />}
+        </button>
+      </motion.nav>
+
+      {/* Mobile dropdown menu */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+            className="fixed top-15.25 left-0 right-0 z-40 flex flex-col px-4 pt-4 pb-6 gap-1 md:hidden"
+            style={{
+              background: "rgba(14,14,14,0.97)",
+              backdropFilter: "blur(20px)",
+              borderBottom: "1px solid rgba(73,72,71,0.2)",
+            }}
+          >
+            {navItems.map((item, i) => (
+              <a
+                key={item}
+                href="#"
+                onClick={() => setMenuOpen(false)}
+                className="text-sm font-medium py-3 px-2 rounded-lg transition-colors duration-150"
+                style={{
+                  color: i === 0 ? "#CBD5E1" : "#71717A",
+                  borderBottom:
+                    i < navItems.length - 1
+                      ? "1px solid rgba(73,72,71,0.1)"
+                      : "none",
+                }}
+              >
+                {item}
+              </a>
+            ))}
+
+            {/* Auth row inside mobile menu */}
+            <div
+              className="flex items-center gap-3 mt-4 pt-4"
+              style={{ borderTop: "1px solid rgba(73,72,71,0.15)" }}
+            >
+              <a
+                href="#"
+                onClick={() => setMenuOpen(false)}
+                className="flex-1 text-sm font-medium text-center py-2.5 rounded-xl transition-colors duration-150"
+                style={{ color: "#71717A", background: "rgba(73,72,71,0.15)" }}
+              >
+                Login
+              </a>
+              <a
+                href="#"
+                onClick={() => setMenuOpen(false)}
+                className="flex-1 text-sm font-medium text-center text-white py-2.5 rounded-xl"
+                style={{
+                  background: "linear-gradient(135deg, #BD9DFF, #8A4CFC)",
+                  boxShadow: "0 0 20px rgba(189,157,255,0.15)",
+                }}
+              >
+                Sign Up
+              </a>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 
@@ -240,7 +351,6 @@ function UrlCard({ result }: { result: ShortUrl }) {
   const [copied, setCopied] = useState<boolean>(false);
 
   const shortUrl = `${import.meta.env.VITE_API_URL}/${result.short_code}`;
-  console.log({ shortUrl });
 
   const handleCopy = (): void => {
     navigator.clipboard.writeText(shortUrl).catch(() => {});
@@ -286,7 +396,9 @@ function UrlCard({ result }: { result: ShortUrl }) {
         }}
       >
         {copied ? <IconCheck /> : <IconCopy />}
-        {copied ? "Copied!" : "Copy"}
+        {/* Hide label on very small screens, keep icon */}
+        <span className="hidden xs:inline">{copied ? "Copied!" : "Copy"}</span>
+        <span className="xs:hidden">{copied ? "!" : ""}</span>
       </motion.button>
     </motion.div>
   );
@@ -310,7 +422,7 @@ function HeroSection() {
 
   return (
     <section
-      className="relative flex flex-col items-center justify-center text-center pt-40 pb-30 px-6 overflow-hidden"
+      className="relative flex flex-col items-center justify-center text-center pt-32 pb-20 px-4 sm:pt-40 sm:pb-30 sm:px-6 overflow-hidden"
       style={{ background: "#0E0E0E" }}
     >
       <div
@@ -323,7 +435,7 @@ function HeroSection() {
 
       <h1
         className="font-mono font-bold leading-[1.08] tracking-[-0.03em] max-w-175"
-        style={{ fontSize: "clamp(2.5rem, 7vw, 3.5rem)" }}
+        style={{ fontSize: "clamp(2rem, 7vw, 3.5rem)" }}
       >
         <motion.span
           variants={fadeUp}
@@ -351,7 +463,7 @@ function HeroSection() {
         initial="hidden"
         animate="visible"
         custom={2}
-        className="mt-5 text-[15px] leading-relaxed max-w-110"
+        className="mt-4 sm:mt-5 text-[14px] sm:text-[15px] leading-relaxed max-w-sm sm:max-w-110 px-2 sm:px-0"
         style={{ color: "#71717A" }}
       >
         Optimize your online presence with high-performance link management.
@@ -363,10 +475,11 @@ function HeroSection() {
         initial="hidden"
         animate="visible"
         custom={3}
-        className="mt-10 w-full max-w-132.5"
+        className="mt-8 sm:mt-10 w-full max-w-132.5"
       >
+        {/* Input row — stacks on very small screens */}
         <div
-          className="flex items-center rounded-xl overflow-hidden p-1.25"
+          className="flex flex-col xs:flex-row items-stretch xs:items-center rounded-xl overflow-hidden p-1.25 gap-1.25 xs:gap-0"
           style={{
             background: "#161616",
             border: "1px solid rgba(73,72,71,0.35)",
@@ -443,14 +556,17 @@ function HeroSection() {
                 >
                   <IconLink />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p
-                    className="text-sm font-semibold"
+                    className="text-sm font-semibold truncate"
                     style={{ color: "#BD9DFF" }}
                   >
                     shrtnr.dev/alpha-beta-99
                   </p>
-                  <p className="text-xs mt-0.5" style={{ color: "#3F3F46" }}>
+                  <p
+                    className="text-xs mt-0.5 truncate"
+                    style={{ color: "#3F3F46" }}
+                  >
                     Redirects to: google.com/search?q=very-long-query…
                   </p>
                 </div>
@@ -460,7 +576,7 @@ function HeroSection() {
                 style={{ background: "rgba(73,72,71,0.2)", color: "#494847" }}
               >
                 <IconCopy />
-                Copy
+                <span className="hidden xs:inline">Copy</span>
               </div>
             </motion.div>
           )}
@@ -525,7 +641,11 @@ function FeaturesSection() {
   const inView = useInView(ref, { once: true, margin: "-60px" });
 
   return (
-    <section ref={ref} className="px-6 py-20" style={{ background: "#0A0A0A" }}>
+    <section
+      ref={ref}
+      className="px-4 sm:px-6 py-16 sm:py-20"
+      style={{ background: "#0A0A0A" }}
+    >
       <div className="max-w-225 mx-auto">
         <motion.div
           variants={{
@@ -569,13 +689,17 @@ function WorkflowSection() {
   const inView = useInView(ref, { once: true, margin: "-60px" });
 
   return (
-    <section ref={ref} className="px-6 py-30" style={{ background: "#0E0E0E" }}>
+    <section
+      ref={ref}
+      className="px-4 sm:px-6 py-20 sm:py-30"
+      style={{ background: "#0E0E0E" }}
+    >
       <div className="max-w-210 mx-auto">
         <motion.h2
           variants={fadeUp}
           initial="hidden"
           animate={inView ? "visible" : "hidden"}
-          className="text-center font-mono font-bold text-[1.75rem] mb-16 tracking-[-0.02em]"
+          className="text-center font-mono font-bold text-[1.75rem] mb-12 sm:mb-16 tracking-[-0.02em]"
           style={{ color: "#CBD5E1" }}
         >
           System Workflow
@@ -588,7 +712,7 @@ function WorkflowSection() {
           }}
           initial="hidden"
           animate={inView ? "visible" : "hidden"}
-          className="grid grid-cols-1 sm:grid-cols-3 gap-10"
+          className="grid grid-cols-1 sm:grid-cols-3 gap-12 sm:gap-10"
         >
           {steps.map((step, i) => (
             <motion.div
@@ -649,14 +773,14 @@ function Footer() {
       variants={fadeIn}
       initial="hidden"
       animate={inView ? "visible" : "hidden"}
-      className="px-8 py-10 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-8"
+      className="px-4 sm:px-8 py-10 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-10 sm:gap-8"
       style={{
         background: "#0E0E0E",
         borderTop: "1px solid rgba(73,72,71,0.18)",
       }}
     >
       <div>
-        <span className="text-white font-bold text-[1.5">Shrtnr</span>
+        <span className="text-white font-bold text-[16px]">Shrtnr</span>
         <p
           className="text-[11px] tracking-widest mt-2"
           style={{ color: "#3F3F46" }}
@@ -665,7 +789,8 @@ function Footer() {
         </p>
       </div>
 
-      <div className="flex gap-14">
+      {/* Footer columns — wrap on very small screens */}
+      <div className="flex flex-wrap gap-x-10 gap-y-8 sm:gap-14">
         {footerColumns.map((col) => (
           <div key={col.heading} className="flex flex-col gap-3">
             <p
