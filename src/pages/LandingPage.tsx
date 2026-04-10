@@ -7,6 +7,7 @@ import {
 } from "motion/react";
 import { useShortUrl } from "@/hooks/useShortUrl";
 import { type ShortUrl } from "@/api/url";
+import { useNavigate } from "react-router";
 
 interface FeatureCardProps {
   icon: ReactNode;
@@ -207,6 +208,8 @@ const IconX = () => (
 
 // Navbar
 function Navbar() {
+  const navigate = useNavigate();
+
   const navItems: string[] = ["Features", "API", "Docs"];
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
 
@@ -249,22 +252,23 @@ function Navbar() {
 
         {/* Desktop auth — hidden on mobile */}
         <div className="hidden md:flex items-center gap-4">
-          <motion.a
-            href="#"
-            className="text-sm font-medium text-[#71717A] hover:text-[#CBD5E1] transition-colors duration-150"
+          <motion.p
+            onClick={() => navigate("/auth/login")}
+            className="text-sm font-medium text-[#71717A] hover:text-[#CBD5E1] transition-colors duration-150 cursor-pointer"
           >
             Login
-          </motion.a>
+          </motion.p>
           <motion.button
             whileHover={{ opacity: 0.9, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
-            className="px-4 py-1.75 text-sm font-medium text-white rounded-xl border"
+            className="px-4 py-1.75 text-sm font-medium text-white rounded-xl border cursor-pointer"
             style={{
               background: "linear-gradient(135deg, #BD9DFF, #8A4CFC)",
               borderColor: "transparent",
               boxShadow: "0 0 20px rgba(189,157,255,0.15)",
             }}
+            onClick={() => navigate("/auth/register")}
           >
             Sign Up
           </motion.button>
