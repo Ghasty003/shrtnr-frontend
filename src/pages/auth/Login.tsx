@@ -13,6 +13,8 @@ import {
   C,
   fadeUp,
 } from "@/components/auth/AuthShared";
+import { useLogin } from "@/hooks/useLogin";
+import { RateLimitError } from "@/lib/axios";
 
 // Validation Schema
 const schema = z.object({
@@ -122,9 +124,9 @@ function TerminalCheckbox({ label, checked, onChange }: CheckboxProps) {
 // Page
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+  const { login, isPending, error, reset } = useLogin();
 
   const {
     register,
@@ -135,18 +137,22 @@ export default function LoginPage() {
     mode: "onBlur",
   });
 
-  const onSubmit = async (_data: LoginForm) => {
-    setIsLoading(true);
-    try {
-      // TODO: call login API
-      // await loginUser({ email: data.email, password: data.password, rememberMe });
-      navigate("/");
-    } catch {
-      // handle API error
-    } finally {
-      setIsLoading(false);
-    }
+  const onSubmit = (data: LoginForm) => {
+    reset();
+    const deviceId = localStorage.getItem("deviceId") ?? undefined;
+    login(
+      { email: data.email, password: data.password, deviceId },
+      {
+        onSuccess: () => navigate("/"),
+      },
+    );
   };
+
+  const errorMessage = error
+    ? error instanceof RateLimitError
+      ? `Too many attempts. Try again in ${error.retryAfter}.`
+      : error.message
+    : null;
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: C.bg }}>
@@ -265,6 +271,20 @@ export default function LoginPage() {
                 />
               </motion.div>
 
+              {errorMessage && (
+                <motion.p
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-[12px] text-center px-1"
+                  style={{
+                    color:
+                      error instanceof RateLimitError ? "#F59E0B" : "#EF4444",
+                  }}
+                >
+                  {errorMessage}
+                </motion.p>
+              )}
+
               {/* Submit */}
               <motion.div
                 variants={fadeUp as any}
@@ -273,8 +293,8 @@ export default function LoginPage() {
                 custom={3}
                 className="mt-1"
               >
-                <PrimaryButton type="submit" loading={isLoading}>
-                  {isLoading ? "AUTHENTICATING..." : "ACCESS SYSTEM →"}
+                <PrimaryButton type="submit" loading={isPending}>
+                  {isPending ? "AUTHENTICATING..." : "ACCESS SYSTEM →"}
                 </PrimaryButton>
               </motion.div>
             </form>
