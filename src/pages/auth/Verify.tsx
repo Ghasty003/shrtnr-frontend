@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import OtpInput from "react-otp-input";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -11,6 +11,8 @@ import {
   C,
   fadeUp,
 } from "@/components/auth/AuthShared";
+import { useVerifyOtp } from "@/hooks/verifyOtp";
+import { RateLimitError } from "@/lib/axios";
 
 // Validation
 const schema = z.object({
@@ -112,10 +114,12 @@ function TerminalLog({
 // Page
 // In a real app you'd read the email from router state:
 // const location = useLocation(); const email = location.state?.email ?? "user@shrtnr.dev";
-const MOCK_EMAIL = "user@shrtnr.dev";
 
 export default function VerifyPage() {
-  const [isLoading, setIsLoading] = useState(false);
+  const location = useLocation();
+  const email: string = location.state?.email ?? "";
+
+  const { verify, isPending, error, reset } = useVerifyOtp();
   const [terminalStatus, setTerminalStatus] = useState<
     "waiting" | "verifying" | "success" | "error"
   >("waiting");
@@ -132,36 +136,36 @@ export default function VerifyPage() {
     defaultValues: { otp: "" },
   });
 
-  // Cooldown timer for resend
-  useEffect(() => {
-    if (resendCooldown <= 0) return;
-    const id = setTimeout(() => setResendCooldown((c) => c - 1), 1000);
-    return () => clearTimeout(id);
-  }, [resendCooldown]);
-
-  const onSubmit = async (_data: OTPForm) => {
-    setIsLoading(true);
+  const onSubmit = (data: OTPForm) => {
+    reset();
     setTerminalStatus("verifying");
-    try {
-      // TODO: call verify OTP API
-      // await verifyOtp({ email: MOCK_EMAIL, otp: data.otp });
-      await new Promise((r) => setTimeout(r, 1200)); // mock
-      setTerminalStatus("success");
-      setTimeout(() => navigate("/"), 800);
-    } catch {
-      setTerminalStatus("error");
-      setError("otp", { message: "Invalid code. Please try again." });
-    } finally {
-      setIsLoading(false);
-    }
+    verify(
+      { email, otp: data.otp },
+      {
+        onSuccess: () => {
+          setTerminalStatus("success");
+          setTimeout(() => navigate("/"), 800);
+        },
+        onError: (err) => {
+          setTerminalStatus("error");
+          if (err instanceof RateLimitError) {
+            setResendCooldown(err.retryAfter as any);
+            setError("otp", {
+              message: `Too many attempts. Try again in ${err.retryAfter}.`,
+            });
+          } else {
+            setError("otp", { message: err.message });
+          }
+        },
+      },
+    );
   };
 
   const handleResend = async () => {
     if (resendCooldown > 0) return;
     setResendCooldown(60);
     setTerminalStatus("waiting");
-    // TODO: call resend OTP API
-    // await resendOtp({ email: MOCK_EMAIL });
+    // await resendOtp({ email }); — wire up when you add that endpoint
   };
 
   return (
@@ -206,7 +210,7 @@ export default function VerifyPage() {
               <p className="text-sm leading-relaxed" style={{ color: C.muted }}>
                 We've sent a 6-digit verification code to{" "}
                 <span className="font-semibold" style={{ color: C.primary }}>
-                  {MOCK_EMAIL}
+                  {email}
                 </span>
                 .<br />
                 Enter it below to secure your account.
@@ -261,14 +265,20 @@ export default function VerifyPage() {
                 />
               </motion.div>
 
-              {errors.otp && (
+              {(errors.otp || error) && (
                 <motion.p
                   initial={{ opacity: 0, y: -4 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="text-center text-[12px] mb-4"
-                  style={{ color: "#EF4444" }}
+                  style={{
+                    color:
+                      error instanceof RateLimitError ? "#F59E0B" : "#EF4444",
+                  }}
                 >
-                  {errors.otp.message}
+                  {errors.otp?.message ??
+                    (error instanceof RateLimitError
+                      ? `Too many attempts. Try again in ${error.retryAfter}.`
+                      : error?.message)}
                 </motion.p>
               )}
 
@@ -279,8 +289,8 @@ export default function VerifyPage() {
                 animate="visible"
                 custom={3}
               >
-                <PrimaryButton type="submit" loading={isLoading}>
-                  {!isLoading && (
+                <PrimaryButton type="submit" loading={isPending}>
+                  {!isPending && (
                     <span className="tracking-widest text-[13px] font-bold">
                       VERIFY EMAIL &nbsp;→
                     </span>
@@ -311,10 +321,10 @@ export default function VerifyPage() {
                 style={{ color: C.primary }}
               >
                 <motion.span
-                  animate={isLoading ? { rotate: 360 } : { rotate: 0 }}
+                  animate={isPending ? { rotate: 360 } : { rotate: 0 }}
                   transition={{
                     duration: 0.8,
-                    repeat: isLoading ? Infinity : 0,
+                    repeat: isPending ? Infinity : 0,
                     ease: "linear",
                   }}
                 >

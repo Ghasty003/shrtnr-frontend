@@ -13,11 +13,13 @@ import {
   C,
   fadeUp,
 } from "@/components/auth/AuthShared";
+import { useRegister } from "@/hooks/useRegister";
+import { RateLimitError } from "@/lib/axios";
 
 // Validation Schema
 const schema = z
   .object({
-    fullName: z.string().optional(),
+    userName: z.string().min(1, "Username is required."),
     email: z.string().email("Enter a valid email address."),
     password: z
       .string()
@@ -128,8 +130,9 @@ const IconEye = ({ open }: { open: boolean }) =>
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+  const { register: registerUser, isPending, error, reset } = useRegister();
 
   const {
     register,
@@ -143,18 +146,28 @@ export default function Register() {
 
   const passwordValue = watch("password", "");
 
-  const onSubmit = async (_data: RegisterForm) => {
-    setIsLoading(true);
-    try {
-      // TODO: call register API
-      // await registerUser({ email: data.email, password: data.password, fullName: data.fullName });
-      navigate("/auth/verify");
-    } catch {
-      // handle API error
-    } finally {
-      setIsLoading(false);
-    }
+  const onSubmit = (data: RegisterForm) => {
+    reset();
+    registerUser(
+      {
+        email: data.email,
+        password: data.password,
+        username: data.userName,
+      },
+      {
+        onSuccess: () => {
+          navigate("/auth/verify", { state: { email: data.email } });
+        },
+      },
+    );
   };
+
+  // Format the error message — rate limit gets special treatment
+  const errorMessage = error
+    ? error instanceof RateLimitError
+      ? `Too many attempts. Try again in ${error.retryAfter}.`
+      : error.message
+    : null;
 
   return (
     <div
@@ -200,18 +213,18 @@ export default function Register() {
             className="flex flex-col gap-5"
             noValidate
           >
-            {/* Full Name */}
+            {/* Username */}
             <motion.div
               variants={fadeUp as any}
               initial="hidden"
               animate="visible"
               custom={1}
             >
-              <FieldLabel>FULL NAME (OPTIONAL)</FieldLabel>
+              <FieldLabel>USERNAME</FieldLabel>
               <TextInput
                 placeholder="John Doe"
-                {...register("fullName")}
-                error={errors.fullName?.message}
+                {...register("userName")}
+                error={errors.userName?.message}
               />
             </motion.div>
 
@@ -274,6 +287,20 @@ export default function Register() {
               />
             </motion.div>
 
+            {errorMessage && (
+              <motion.p
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-[12px] text-center px-1"
+                style={{
+                  color:
+                    error instanceof RateLimitError ? "#F59E0B" : "#EF4444",
+                }}
+              >
+                {errorMessage}
+              </motion.p>
+            )}
+
             {/* Submit */}
             <motion.div
               variants={fadeUp as any}
@@ -282,9 +309,9 @@ export default function Register() {
               custom={5}
               className="mt-2"
             >
-              <PrimaryButton type="submit" loading={isLoading}>
-                {!isLoading && <>Initialize Account &nbsp;→</>}
-                {isLoading && "Initializing..."}
+              <PrimaryButton type="submit" loading={isPending}>
+                {!isPending && <>Initialize Account &nbsp;→</>}
+                {isPending && "Initializing..."}
               </PrimaryButton>
             </motion.div>
           </form>
