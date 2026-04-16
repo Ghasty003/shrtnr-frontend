@@ -9,7 +9,7 @@ import DashboardPage from "@/pages/dashboard/Dashboardpage";
 import AnalyticsPage from "@/pages/dashboard/AnalyticsPage";
 import LinksPage from "@/pages/dashboard/LinksPage";
 import LinkDetailPage from "@/pages/dashboard/LinksDetailsPage";
-import SettingsPage from "@/pages/dashboard/settingsPage";
+import SettingsPage from "@/pages/dashboard/SettingsPage";
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem("accessToken");

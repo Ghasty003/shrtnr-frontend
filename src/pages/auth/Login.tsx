@@ -143,7 +143,7 @@ export default function LoginPage() {
     login(
       { email: data.email, password: data.password, deviceId },
       {
-        onSuccess: () => navigate("/"),
+        onSuccess: () => navigate("/dashboard"),
       },
     );
   };
