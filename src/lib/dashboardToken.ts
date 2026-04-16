@@ -1,0 +1,15 @@
+export const D = {
+  bg: "#0E0E0E",
+  surface: "#141313",
+  surfaceContainer: "#1A1919",
+  surfaceContainerHigh: "#201F1F",
+  surfaceContainerHighest: "#272626",
+  primary: "#BD9DFF",
+  primaryDim: "#8A4CFC",
+  muted: "#6B6A6A",
+  mutedDim: "#3D3C3C",
+  text: "#FFFFFF",
+  textSub: "#ABABAB",
+  border: "rgba(73,72,71,0.15)",
+  gradient: "linear-gradient(135deg, #BD9DFF 0%, #8A4CFC 100%)",
+} as const;
