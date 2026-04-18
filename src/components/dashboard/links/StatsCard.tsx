@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import type { LinkStats } from "@/api/url";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -13,52 +14,79 @@ const fadeUp = {
   }),
 };
 
-interface StatCardItem {
-  label: string;
-  value: string;
-  unit?: string;
-  badge: string;
-  badgeColor: string;
-  accentColor: string;
+function CardSkeleton({ index }: { index: number }) {
+  return (
+    <motion.div
+      variants={fadeUp}
+      initial="hidden"
+      animate="visible"
+      custom={1 + index * 0.4}
+      className="rounded-xl p-5 bg-surface-container animate-pulse"
+    >
+      <div className="flex items-center justify-between mb-3">
+        <div className="h-2.5 w-24 rounded bg-white/[0.07]" />
+        <div className="h-3 w-10 rounded bg-white/[0.07]" />
+      </div>
+      <div className="h-8 w-28 rounded bg-white/[0.07] mb-4" />
+      <div className="h-0.75 w-16 rounded-full bg-white/[0.07]" />
+    </motion.div>
+  );
 }
 
-const STAT_CARDS: StatCardItem[] = [
-  {
-    label: "TOTAL CLICKS",
-    value: "12,408",
-    badge: "+12.4%",
-    badgeColor: "text-green-400",
-    accentColor: "#BD9DFF",
-  },
-  {
-    label: "UNIQUE VISITORS",
-    value: "8,912",
-    badge: "+5.2%",
-    badgeColor: "text-green-400",
-    accentColor: "#BD9DFF",
-  },
-  {
-    label: "AVG REDIRECT TIME",
-    value: "142",
-    unit: "ms",
-    badge: "-18ms",
-    badgeColor: "text-green-400",
-    accentColor: "#BD9DFF",
-  },
-  {
-    label: "BOUNCE RATE",
-    value: "4.2",
-    unit: "%",
-    badge: "+2.1%",
-    badgeColor: "text-red-400",
-    accentColor: "#EF4444",
-  },
-];
+interface StatCardsProps {
+  stats: LinkStats | undefined;
+  isLoading: boolean;
+}
 
-export default function StatCards() {
+export default function StatCards({ stats, isLoading }: StatCardsProps) {
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-4 gap-4 mb-6">
+        {[0, 1, 2, 3].map((i) => (
+          <CardSkeleton key={i} index={i} />
+        ))}
+      </div>
+    );
+  }
+
+  const cards = [
+    {
+      label: "TOTAL CLICKS",
+      value: (stats?.totalClicks ?? 0).toLocaleString(),
+      unit: undefined,
+      badge: "+12.4%",
+      badgeColor: "text-green-400",
+      accentColor: "#BD9DFF",
+    },
+    {
+      label: "UNIQUE VISITORS",
+      value: (stats?.uniqueVisitors ?? 0).toLocaleString(),
+      unit: undefined,
+      badge: "+5.2%",
+      badgeColor: "text-green-400",
+      accentColor: "#BD9DFF",
+    },
+    {
+      label: "AVG REDIRECT TIME",
+      value: String(stats?.avgRedirectTime ?? 142),
+      unit: "ms",
+      badge: "-18ms",
+      badgeColor: "text-green-400",
+      accentColor: "#BD9DFF",
+    },
+    {
+      label: "BOUNCE RATE",
+      value: String(stats?.bounceRate ?? 4.2),
+      unit: "%",
+      badge: "+2.1%",
+      badgeColor: "text-red-400",
+      accentColor: "#EF4444",
+    },
+  ];
+
   return (
     <div className="grid grid-cols-4 gap-4 mb-6">
-      {STAT_CARDS.map((card, i) => (
+      {cards.map((card, i) => (
         <motion.div
           key={card.label}
           variants={fadeUp}
@@ -75,7 +103,6 @@ export default function StatCards() {
               {card.badge}
             </span>
           </div>
-
           <div className="flex items-baseline gap-1 mb-4">
             <span className="text-[2rem] font-bold text-white leading-none">
               {card.value}
@@ -86,8 +113,6 @@ export default function StatCards() {
               </span>
             )}
           </div>
-
-          {/* Accent underline bar */}
           <motion.div
             className="h-0.75 rounded-full"
             style={{ background: card.accentColor }}

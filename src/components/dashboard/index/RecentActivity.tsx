@@ -1,10 +1,6 @@
-import {
-  IconChainLink,
-  IconCursor,
-  IconGear,
-  IconWarning,
-} from "@/utils/icons";
 import { motion } from "motion/react";
+import { useActivity } from "@/hooks/useActivity";
+import type { ActivityEntry } from "@/api/url";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
@@ -19,94 +15,146 @@ const fadeUp = {
   }),
 };
 
-const ACTIVITIES = [
-  {
-    key: "link",
-    icon: <IconChainLink size={15} className="text-primary" />,
-    iconBgClass: "bg-primary/12",
-    title: "Link Created",
-    desc: (
-      <>
-        Shortened{" "}
-        <span className="text-primary font-semibold">shrt.nr/sale</span> for
-        campaign.
-      </>
-    ),
-    time: "2 MINUTES AGO",
+const EVENT_CONFIG: Record<
+  string,
+  { label: string; colour: string; dot: string }
+> = {
+  URL_SHORTENED: {
+    label: "Link shortened",
+    colour: "text-primary",
+    dot: "bg-primary",
   },
-  {
-    key: "click",
-    icon: <IconCursor size={15} className="text-blue-400" />,
-    iconBgClass: "bg-blue-500/12",
-    title: "New Click Detected",
-    desc: (
-      <>
-        Redirect from Twitter/X to{" "}
-        <span className="text-primary font-semibold">shrt.nr/blog</span>
-      </>
-    ),
-    time: "15 MINUTES AGO",
+  URL_REDIRECTED: {
+    label: "Link visited",
+    colour: "text-blue-400",
+    dot: "bg-blue-400",
   },
-  {
-    key: "warning",
-    icon: <IconWarning size={15} className="text-red-400" />,
-    iconBgClass: "bg-red-500/12",
-    title: "Security Alert",
-    desc: (
-      <>
-        Unusual traffic spike on{" "}
-        <span className="text-primary font-semibold">shrt.nr/promo</span>
-      </>
-    ),
-    time: "1 HOUR AGO",
+  LOGIN_SUCCESS: {
+    label: "Signed in",
+    colour: "text-green-400",
+    dot: "bg-green-400",
   },
-  {
-    key: "settings",
-    icon: <IconGear size={15} className="text-muted" />,
-    iconBgClass: "bg-surface-container-high",
-    title: "Profile Updated",
-    desc: "Changed primary email address.",
-    time: "4 HOURS AGO",
+  LOGOUT: { label: "Signed out", colour: "text-muted", dot: "bg-muted" },
+  LOGOUT_ALL: {
+    label: "All sessions revoked",
+    colour: "text-red-400",
+    dot: "bg-red-400",
   },
-];
+  TOKEN_REFRESHED: {
+    label: "Session refreshed",
+    colour: "text-muted",
+    dot: "bg-muted",
+  },
+  TOKEN_REUSE_DETECTED: {
+    label: "Suspicious login",
+    colour: "text-red-400",
+    dot: "bg-red-400",
+  },
+};
+
+function fallbackConfig(eventType: string) {
+  return {
+    label: eventType.replace(/_/g, " ").toLowerCase(),
+    colour: "text-muted",
+    dot: "bg-muted",
+  };
+}
+
+function timeAgo(iso: string) {
+  const seconds = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (seconds < 60) return `${seconds}s ago`;
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+  return `${Math.floor(seconds / 86400)}d ago`;
+}
+
+function ActivityRowSkeleton() {
+  return (
+    <div className="flex items-center gap-3 py-3 animate-pulse">
+      <div className="w-1.5 h-1.5 rounded-full bg-white/[0.07] shrink-0" />
+      <div className="flex-1 space-y-1.5">
+        <div className="h-3 w-28 rounded bg-white/[0.07]" />
+        <div className="h-2.5 w-20 rounded bg-white/[0.07]" />
+      </div>
+      <div className="h-2.5 w-12 rounded bg-white/[0.07]" />
+    </div>
+  );
+}
+
+function ActivityRow({
+  entry,
+  index,
+}: {
+  entry: ActivityEntry;
+  index: number;
+}) {
+  const config =
+    EVENT_CONFIG[entry.eventType] ?? fallbackConfig(entry.eventType);
+  const meta = entry.meta as Record<string, string> | null;
+
+  return (
+    <motion.div
+      variants={fadeUp}
+      initial="hidden"
+      animate="visible"
+      custom={9 + index * 0.5}
+      className="flex items-center gap-3 py-3 border-t border-border first:border-t-0"
+    >
+      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${config.dot}`} />
+      <div className="flex-1 min-w-0">
+        <p className={`text-[12.5px] font-semibold ${config.colour}`}>
+          {config.label}
+        </p>
+        {meta?.long_url && (
+          <p className="text-[11px] text-muted truncate mt-0.5">
+            {meta.long_url}
+          </p>
+        )}
+      </div>
+      <span className="text-[11px] text-muted shrink-0">
+        {timeAgo(entry.createdAt)}
+      </span>
+    </motion.div>
+  );
+}
 
 export default function RecentActivity() {
+  const { data: activity, isLoading, isError } = useActivity(5);
+
   return (
-    <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={6}>
-      <h2 className="text-[1.25rem] font-bold text-white mb-4.5">
+    <motion.div
+      variants={fadeUp}
+      initial="hidden"
+      animate="visible"
+      custom={8}
+      className="rounded-xl p-5 bg-surface-container"
+    >
+      <h2 className="text-[1.25rem] font-bold text-white mb-1">
         Recent Activity
       </h2>
-      <div className="rounded-xl p-4 bg-surface-container">
-        <div className="flex flex-col gap-4.5">
-          {ACTIVITIES.map((item, i) => (
-            <motion.div
-              key={item.key}
-              variants={fadeUp}
-              initial="hidden"
-              animate="visible"
-              custom={7 + i * 0.5}
-              className="flex items-start gap-3"
-            >
-              <div
-                className={`w-8.5 h-8.5 rounded-[9px] flex items-center justify-center shrink-0 mt-px ${item.iconBgClass}`}
-              >
-                {item.icon}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-[13px] font-semibold text-white leading-tight">
-                  {item.title}
-                </div>
-                <div className="text-[12px] mt-0.75 leading-relaxed text-muted">
-                  {item.desc}
-                </div>
-                <div className="text-2.5 font-semibold tracking-widest mt-1.25 text-muted-dim">
-                  {item.time}
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
+      <p className="text-[12px] text-muted mb-4">Your last 5 actions</p>
+
+      {isLoading &&
+        Array.from({ length: 5 }).map((_, i) => (
+          <ActivityRowSkeleton key={i} />
+        ))}
+
+      {isError && (
+        <p className="text-[13px] text-muted py-4 text-center">
+          Failed to load activity.
+        </p>
+      )}
+
+      {!isLoading && !isError && activity?.length === 0 && (
+        <p className="text-[13px] text-muted py-4 text-center">
+          No activity yet.
+        </p>
+      )}
+
+      {!isLoading &&
+        activity?.map((entry, i) => (
+          <ActivityRow key={entry.id} entry={entry} index={i} />
+        ))}
     </motion.div>
   );
 }

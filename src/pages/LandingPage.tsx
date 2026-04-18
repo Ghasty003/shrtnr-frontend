@@ -417,7 +417,7 @@ function HeroSection() {
     const trimmed = inputUrl.trim();
     if (!trimmed) return;
     reset();
-    shorten(trimmed);
+    shorten({ longUrl: trimmed });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {

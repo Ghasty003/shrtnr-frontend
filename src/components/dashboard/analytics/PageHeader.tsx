@@ -1,11 +1,6 @@
 import { motion } from "motion/react";
-
-type TimeRange = "30d" | "90d" | "ytd";
-
-interface PageHeaderProps {
-  range: TimeRange;
-  setRange: (r: TimeRange) => void;
-}
+import { useAnalyticsStore } from "@/store/analyticsStore";
+import type { AnalyticsRange } from "@/api/analytics";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -20,8 +15,10 @@ const fadeUp = {
   }),
 };
 
-export default function PageHeader({ range, setRange }: PageHeaderProps) {
-  const tabs: { key: TimeRange; label: string }[] = [
+export default function PageHeader() {
+  const { range, setRange } = useAnalyticsStore();
+
+  const tabs: { key: AnalyticsRange; label: string }[] = [
     { key: "30d", label: "Last 30 Days" },
     { key: "90d", label: "90 Days" },
     { key: "ytd", label: "YTD" },
@@ -47,7 +44,6 @@ export default function PageHeader({ range, setRange }: PageHeaderProps) {
         </h1>
       </div>
 
-      {/* Time range tabs */}
       <div className="flex items-center gap-1 p-1 rounded-xl bg-surface-container">
         {tabs.map((t) => (
           <button

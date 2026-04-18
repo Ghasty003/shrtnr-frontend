@@ -5,7 +5,6 @@ import { IconSparkle } from "@/utils/icons";
 import StatsStrip from "@/components/dashboard/links/StatsStrip";
 import LinksTable from "@/components/dashboard/links/LinksTable";
 
-// ── Animation variant ─────────────────────────────────────────────────────────
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: (i: number) => ({
@@ -19,10 +18,8 @@ const fadeUp = {
   }),
 };
 
-// ── Data ──────────────────────────────────────────────────────────────────────
 type FilterTab = "ALL" | "ACTIVE" | "DISABLED";
 
-// ── InsightCallout ────────────────────────────────────────────────────────────
 function InsightCallout() {
   return (
     <motion.div
@@ -58,7 +55,6 @@ function InsightCallout() {
   );
 }
 
-// ── LinksPage ─────────────────────────────────────────────────────────────────
 export default function LinksPage() {
   const [filter, setFilter] = useState<FilterTab>("ALL");
 
@@ -66,7 +62,7 @@ export default function LinksPage() {
     <div className="px-8 py-8 pb-12">
       <PageHeader filter={filter} setFilter={setFilter} />
       <StatsStrip />
-      <LinksTable filter={filter} />
+      <LinksTable key={filter} filter={filter} />
       <InsightCallout />
     </div>
   );

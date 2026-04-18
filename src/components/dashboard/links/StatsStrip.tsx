@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import { useStats } from "@/hooks/useStats";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
@@ -13,7 +14,33 @@ const fadeUp = {
   }),
 };
 
+function formatNum(n: number) {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}k`;
+  return n.toLocaleString();
+}
+
+function StripSkeleton() {
+  return (
+    <div className="grid grid-cols-4 gap-4 mb-6">
+      {[0, 1, 2, 3].map((i) => (
+        <div
+          key={i}
+          className="rounded-xl p-5 bg-surface-container animate-pulse"
+        >
+          <div className="h-2.5 w-24 rounded bg-white/[0.07] mb-3" />
+          <div className="h-8 w-20 rounded bg-white/[0.07]" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function StatsStrip() {
+  const { data: stats, isLoading } = useStats();
+
+  if (isLoading) return <StripSkeleton />;
+
   return (
     <motion.div
       variants={fadeUp}
@@ -22,15 +49,15 @@ export default function StatsStrip() {
       custom={1}
       className="grid grid-cols-4 gap-4 mb-6"
     >
-      {/* Total Assets */}
       <div className="rounded-xl p-5 bg-surface-container">
         <p className="text-[10.5px] font-semibold tracking-[0.12em] uppercase text-muted mb-3">
           TOTAL ASSETS
         </p>
-        <p className="text-[2rem] font-bold text-white leading-none">1,248</p>
+        <p className="text-[2rem] font-bold text-white leading-none">
+          {formatNum(stats?.totalLinks ?? 0)}
+        </p>
       </div>
 
-      {/* Clicks 24H */}
       <div className="rounded-xl p-5 bg-surface-container">
         <p className="text-[10.5px] font-semibold tracking-[0.12em] uppercase text-muted mb-3">
           CLICKS (24H)
@@ -39,11 +66,10 @@ export default function StatsStrip() {
           className="text-[2rem] font-bold leading-none"
           style={{ color: "#BD9DFF" }}
         >
-          +42.5k
+          +{formatNum(stats?.clicksToday ?? 0)}
         </p>
       </div>
 
-      {/* Avg CTR */}
       <div className="rounded-xl p-5 bg-surface-container">
         <p className="text-[10.5px] font-semibold tracking-[0.12em] uppercase text-muted mb-3">
           AVG CTR
@@ -51,7 +77,6 @@ export default function StatsStrip() {
         <p className="text-[2rem] font-bold text-white leading-none">18.2%</p>
       </div>
 
-      {/* System Status */}
       <div className="rounded-xl p-5 bg-surface-container">
         <p className="text-[10.5px] font-semibold tracking-[0.12em] uppercase text-muted mb-3">
           SYSTEM STATUS

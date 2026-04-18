@@ -6,6 +6,7 @@ import {
 } from "@/utils/icons";
 import { useNavigate } from "react-router";
 import { motion } from "motion/react";
+import type { LinkDetail } from "@/api/url";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -22,11 +23,16 @@ const fadeUp = {
 
 interface DetailHeaderProps {
   slug: string;
+  link: LinkDetail | undefined;
+  isLoading: boolean;
 }
 
-export default function DetailHeader({ slug }: DetailHeaderProps) {
+export default function DetailHeader({
+  slug,
+  link,
+  isLoading,
+}: DetailHeaderProps) {
   const navigate = useNavigate();
-  const displaySlug = `shrt.nr/${slug}`;
 
   return (
     <motion.div
@@ -36,7 +42,6 @@ export default function DetailHeader({ slug }: DetailHeaderProps) {
       custom={0}
       className="mb-8"
     >
-      {/* Back + eyebrow */}
       <div className="flex items-center gap-3 mb-3">
         <button
           onClick={() => navigate("/dashboard/links")}
@@ -51,21 +56,29 @@ export default function DetailHeader({ slug }: DetailHeaderProps) {
         </p>
       </div>
 
-      {/* Title + buttons */}
       <div className="flex items-start justify-between gap-6">
         <div>
-          <h1
-            className="font-bold text-white leading-[1.05] tracking-[-0.02em] mb-2"
-            style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)" }}
-          >
-            {displaySlug}
-          </h1>
-          <div className="flex items-center gap-2 text-muted">
-            <IconArrowRight />
-            <span className="text-[12.5px] font-mono">
-              https://editorial.engineering/campaigns/q4-launch-promo-final-v2
-            </span>
-          </div>
+          {isLoading ? (
+            <div className="animate-pulse space-y-2.5">
+              <div className="h-9 w-64 rounded-lg bg-white/[0.07]" />
+              <div className="h-4 w-96 rounded bg-white/[0.07]" />
+            </div>
+          ) : (
+            <>
+              <h1
+                className="font-bold text-white leading-[1.05] tracking-[-0.02em] mb-2"
+                style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)" }}
+              >
+                shrt.nr/{slug}
+              </h1>
+              <div className="flex items-center gap-2 text-muted">
+                <IconArrowRight />
+                <span className="text-[12.5px] font-mono truncate max-w-lg">
+                  {link?.long_url}
+                </span>
+              </div>
+            </>
+          )}
         </div>
 
         <div className="flex items-center gap-2 shrink-0 mt-1">

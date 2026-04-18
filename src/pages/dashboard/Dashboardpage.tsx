@@ -9,6 +9,7 @@ import ShortenWidget from "@/components/dashboard/index/ShortenWidget";
 import StatCard from "@/components/dashboard/index/StatCard";
 import RecentLinks from "@/components/dashboard/index/RecentLinks";
 import RecentActivity from "@/components/dashboard/index/RecentActivity";
+import { useStats } from "@/hooks/useStats";
 
 // Animation variants
 const fadeUp = {
@@ -55,7 +56,53 @@ const CHART_1 = [3, 5, 4, 6, 4, 7, 9];
 const CHART_2 = [4, 3, 6, 5, 7, 9, 8];
 const CHART_3 = [5, 4, 7, 6, 9, 8, 10];
 
+function formatNum(n: number) {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}k`;
+  return n.toLocaleString();
+}
+
+function StatCardSkeleton({ delay }: { delay: number }) {
+  return (
+    <motion.div
+      variants={fadeUp}
+      initial="hidden"
+      animate="visible"
+      custom={delay}
+      className="rounded-xl p-5 bg-surface-container animate-pulse"
+    >
+      <div className="flex items-start justify-between mb-3">
+        <div className="w-8 h-8 rounded-lg bg-white/[0.07]" />
+        <div className="h-4 w-10 rounded bg-white/[0.07]" />
+      </div>
+      <div className="h-7 w-20 rounded bg-white/[0.07] mb-1.5" />
+      <div className="h-2.5 w-16 rounded bg-white/[0.07]" />
+      <div className="flex items-end gap-1 h-9 mt-4">
+        {[40, 55, 45, 65, 50, 75, 90].map((h, i) => (
+          <div
+            key={i}
+            className="flex-1 rounded-[3px] bg-white/[0.07]"
+            style={{ height: `${h}%` }}
+          />
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
 function StatsGrid() {
+  const { data: stats, isLoading } = useStats();
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-4 gap-4 mt-6">
+        {[3, 3.5, 4, 4.5].map((d) => (
+          <StatCardSkeleton key={d} delay={d} />
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-4 gap-4 mt-6">
       <StatCard
@@ -65,7 +112,7 @@ function StatsGrid() {
         topRight={
           <span className="text-[11px] font-semibold text-green-500">+12%</span>
         }
-        value="1,284"
+        value={formatNum(stats?.totalLinks ?? 0)}
         label="TOTAL LINKS"
         bottom={
           <MiniBarChart
@@ -83,7 +130,7 @@ function StatsGrid() {
         topRight={
           <span className="text-[11px] font-semibold text-green-500">+24%</span>
         }
-        value="42.5k"
+        value={formatNum(stats?.totalClicks ?? 0)}
         label="TOTAL CLICKS"
         bottom={
           <MiniBarChart
@@ -103,7 +150,7 @@ function StatsGrid() {
             Active
           </span>
         }
-        value="892"
+        value={formatNum(stats?.clicksToday ?? 0)}
         label="CLICKS TODAY"
         bottom={
           <MiniBarChart
@@ -119,14 +166,16 @@ function StatsGrid() {
         iconBgClass="bg-red-500/10"
         icon={<IconTrending size={15} className="text-red-400" />}
         topRight={null}
-        value="shrt.nr/sale"
+        value={
+          stats?.mostClicked ? `shrt.nr/${stats.mostClicked.short_code}` : "—"
+        }
         label="MOST CLICKED"
         bottom={
           <div className="mt-4">
             <div className="h-1.25 rounded-full overflow-hidden bg-surface-container-high">
               <motion.div
                 initial={{ width: 0 }}
-                animate={{ width: "75%" }}
+                animate={{ width: `${stats?.mostClicked?.percentage ?? 0}%` }}
                 transition={{
                   duration: 0.7,
                   delay: 0.6,
@@ -136,7 +185,9 @@ function StatsGrid() {
               />
             </div>
             <div className="flex justify-end mt-1.5">
-              <span className="text-[11px] text-muted">75%</span>
+              <span className="text-[11px] text-muted">
+                {stats?.mostClicked?.percentage ?? 0}%
+              </span>
             </div>
           </div>
         }

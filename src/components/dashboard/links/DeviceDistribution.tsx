@@ -1,7 +1,6 @@
 import { motion } from "motion/react";
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
-import { useAnalyticsDevices } from "@/hooks/useAnalytics";
-import { useAnalyticsStore } from "@/store/analyticsStore";
+import { useLinkDevices } from "@/hooks/useLinkDevices";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -85,20 +84,23 @@ function Skeleton() {
   );
 }
 
-export default function DeviceDistribution() {
-  const { range } = useAnalyticsStore();
-  const { data, isLoading } = useAnalyticsDevices(range);
+interface DeviceDistributionProps {
+  slug: string;
+}
 
+export default function DeviceDistribution({ slug }: DeviceDistributionProps) {
+  const { data, isLoading } = useLinkDevices(slug);
+
+  const top = data?.[0];
   const chartData =
     data?.map((d, i) => ({ ...d, color: getColor(d.device, i) })) ?? [];
-  const top = chartData[0];
 
   return (
     <motion.div
       variants={fadeUp}
       initial="hidden"
       animate="visible"
-      custom={9}
+      custom={8}
       className="rounded-xl p-6 bg-surface-container"
     >
       <h2 className="text-[1rem] font-bold text-white mb-6">

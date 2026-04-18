@@ -5,7 +5,8 @@ import StatCards from "@/components/dashboard/links/StatsCard";
 import ClicksOverTimeChart from "@/components/dashboard/links/ClicksOverTimeChart";
 import TopCountries from "@/components/dashboard/links/TopCountries";
 import TrafficReferrers from "@/components/dashboard/links/TrafficReferrers";
-import DeviceDistribution from "@/components/dashboard/analytics/DeviceDistribution";
+import DeviceDistribution from "@/components/dashboard/links/DeviceDistribution";
+import { useLinkDetail } from "@/hooks/useLinkDetail";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -45,24 +46,24 @@ function StatusFooter() {
 }
 
 export default function LinkDetailPage() {
-  const { slug = "launch-promo" } = useParams<{ slug: string }>();
+  const { slug = "" } = useParams<{ slug: string }>();
+  const { data: link, isLoading } = useLinkDetail(slug);
 
   return (
     <div className="px-8 py-8 pb-0">
-      <DetailHeader slug={slug} />
-      <StatCards />
-      <ClicksOverTimeChart />
+      <DetailHeader slug={slug} link={link} isLoading={isLoading} />
+      <StatCards stats={link?.stats} isLoading={isLoading} />
+      <ClicksOverTimeChart slug={slug} />
 
-      {/* Bottom three-panel row */}
       <div className="grid grid-cols-12 gap-6 mb-8">
         <div className="col-span-4">
-          <TopCountries />
+          <TopCountries slug={slug} />
         </div>
         <div className="col-span-4">
-          <TrafficReferrers />
+          <TrafficReferrers slug={slug} />
         </div>
         <div className="col-span-4">
-          <DeviceDistribution />
+          <DeviceDistribution slug={slug} />
         </div>
       </div>
 

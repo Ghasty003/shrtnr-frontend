@@ -1,6 +1,7 @@
 import { IconCopy, IconQR } from "@/utils/icons";
 import { useState } from "react";
 import { motion } from "motion/react";
+import { useShortUrl } from "@/hooks/useShortUrl";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
@@ -15,9 +16,33 @@ const fadeUp = {
   }),
 };
 
+const SHORT_DOMAIN = import.meta.env.VITE_SHORT_DOMAIN ?? "shrt.nr";
+
 export default function ShortenWidget() {
   const [longUrl, setLongUrl] = useState("");
   const [alias, setAlias] = useState("");
+  const [copied, setCopied] = useState(false);
+  const { shorten, result, isPending, isError, error, reset } = useShortUrl();
+
+  const previewCode = result?.short_code ?? alias ?? "summer-promo";
+  const shortUrl = `${SHORT_DOMAIN}/${previewCode}`;
+
+  function handleShorten() {
+    if (!longUrl.trim()) return;
+    shorten({ longUrl: longUrl.trim(), alias: alias.trim() || undefined });
+  }
+
+  function handleCopy() {
+    navigator.clipboard.writeText(`https://${shortUrl}`);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  function handleReset() {
+    setLongUrl("");
+    setAlias("");
+    reset();
+  }
 
   return (
     <motion.div
@@ -35,9 +60,14 @@ export default function ShortenWidget() {
           </label>
           <input
             value={longUrl}
-            onChange={(e) => setLongUrl(e.target.value)}
+            onChange={(e) => {
+              setLongUrl(e.target.value);
+              if (result) reset();
+            }}
+            onKeyDown={(e) => e.key === "Enter" && handleShorten()}
             placeholder="https://very-long-and-complex-destination-url.com/path"
-            className="w-full px-4 py-2.75 rounded-xl text-[13px] outline-none bg-surface-container-high text-white placeholder:text-muted/40 transition-all duration-150 focus:ring-2 focus:ring-primary/30"
+            disabled={isPending}
+            className="w-full px-4 py-2.75 rounded-xl text-[13px] outline-none bg-surface-container-high text-white placeholder:text-muted/40 transition-all duration-150 focus:ring-2 focus:ring-primary/30 disabled:opacity-50"
           />
         </div>
 
@@ -50,30 +80,63 @@ export default function ShortenWidget() {
             value={alias}
             onChange={(e) => setAlias(e.target.value)}
             placeholder="summer-promo"
-            className="w-full px-4 py-2.75 rounded-xl text-[13px] outline-none bg-surface-container-high text-white placeholder:text-muted/40 transition-all duration-150 focus:ring-2 focus:ring-primary/30"
+            disabled={isPending}
+            className="w-full px-4 py-2.75 rounded-xl text-[13px] outline-none bg-surface-container-high text-white placeholder:text-muted/40 transition-all duration-150 focus:ring-2 focus:ring-primary/30 disabled:opacity-50"
           />
         </div>
 
-        {/* Shorten button */}
-        <button className="px-7 py-2.75 rounded-xl text-[13px] font-extrabold text-white tracking-[0.12em] transition-opacity duration-150 hover:opacity-90 active:scale-[0.98] shrink-0 [background:var(--gradient-primary)]">
-          SHORTEN
-        </button>
+        {/* Shorten / Reset button */}
+        {result ? (
+          <button
+            onClick={handleReset}
+            className="px-7 py-2.75 rounded-xl text-[13px] font-extrabold text-white tracking-[0.12em] transition-opacity duration-150 hover:opacity-90 active:scale-[0.98] shrink-0 bg-surface-container-high"
+          >
+            NEW
+          </button>
+        ) : (
+          <button
+            onClick={handleShorten}
+            disabled={isPending || !longUrl.trim()}
+            className="px-7 py-2.75 rounded-xl text-[13px] font-extrabold text-white tracking-[0.12em] transition-opacity duration-150 hover:opacity-90 active:scale-[0.98] shrink-0 [background:var(--gradient-primary)] disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isPending ? "..." : "SHORTEN"}
+          </button>
+        )}
       </div>
+
+      {/* Error */}
+      {isError && (
+        <p className="mt-3 text-[12px] text-red-400">{error?.message}</p>
+      )}
 
       {/* Preview row */}
       <div className="flex items-center justify-between mt-5">
         <div className="flex items-center gap-3">
-          <span className="text-[13px] text-muted">Preview:</span>
-          <span className="px-2.5 py-1 rounded-lg text-[13px] font-mono font-medium bg-primary/15 text-primary">
-            shrt.nr/summer-promo
+          <span className="text-[13px] text-muted">
+            {result ? "Shortened:" : "Preview:"}
           </span>
+          <span className="px-2.5 py-1 rounded-lg text-[13px] font-mono font-medium bg-primary/15 text-primary">
+            {shortUrl}
+          </span>
+          {result && (
+            <span className="text-[11px] font-semibold text-green-500">
+              ✓ Ready
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-1">
           <button
+            onClick={handleCopy}
             className="p-2 rounded-lg text-muted transition-colors duration-150 hover:text-white"
-            title="Copy"
+            title={copied ? "Copied!" : "Copy"}
           >
-            <IconCopy />
+            {copied ? (
+              <span className="text-[11px] font-bold text-green-400">
+                COPIED
+              </span>
+            ) : (
+              <IconCopy />
+            )}
           </button>
           <button
             className="p-2 rounded-lg text-muted transition-colors duration-150 hover:text-white"
