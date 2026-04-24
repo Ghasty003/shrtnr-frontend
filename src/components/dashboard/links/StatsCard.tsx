@@ -41,7 +41,7 @@ interface StatCardsProps {
 export default function StatCards({ stats, isLoading }: StatCardsProps) {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {[0, 1, 2, 3].map((i) => (
           <CardSkeleton key={i} index={i} />
         ))}
@@ -85,7 +85,7 @@ export default function StatCards({ stats, isLoading }: StatCardsProps) {
   ];
 
   return (
-    <div className="grid grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
       {cards.map((card, i) => (
         <motion.div
           key={card.label}

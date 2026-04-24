@@ -22,7 +22,7 @@ function formatNum(n: number) {
 
 function StripSkeleton() {
   return (
-    <div className="grid grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
       {[0, 1, 2, 3].map((i) => (
         <div
           key={i}
@@ -47,7 +47,7 @@ export default function StatsStrip() {
       initial="hidden"
       animate="visible"
       custom={1}
-      className="grid grid-cols-4 gap-4 mb-6"
+      className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"
     >
       <div className="rounded-xl p-5 bg-surface-container">
         <p className="text-[10.5px] font-semibold tracking-[0.12em] uppercase text-muted mb-3">

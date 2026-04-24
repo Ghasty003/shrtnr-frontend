@@ -38,7 +38,7 @@ export default function StatCard({
       initial="hidden"
       animate="visible"
       custom={delay}
-      className="rounded-xl p-5 flex flex-col bg-surface-container"
+      className="rounded-xl p-4 sm:p-5 flex flex-col bg-surface-container"
     >
       <div className="flex items-start justify-between">
         <div
@@ -49,7 +49,7 @@ export default function StatCard({
         {topRight}
       </div>
       <div className="mt-3.5">
-        <div className="text-[1.85rem] font-bold text-white leading-none">
+        <div className="text-[1.5rem] sm:text-[1.85rem] font-bold text-white leading-none">
           {value}
         </div>
         <div className="text-[10.5px] font-semibold tracking-[0.12em] uppercase mt-1.25 text-muted">

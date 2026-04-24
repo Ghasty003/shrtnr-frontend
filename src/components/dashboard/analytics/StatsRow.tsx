@@ -24,7 +24,7 @@ function formatNum(n: number) {
 
 function Skeleton() {
   return (
-    <div className="grid grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
       {[0, 1, 2, 3].map((i) => (
         <div
           key={i}
@@ -90,7 +90,7 @@ export default function StatsRow() {
   ];
 
   return (
-    <div className="grid grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
       {items.map((s, i) => (
         <motion.div
           key={s.label}

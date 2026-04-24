@@ -18,7 +18,7 @@ const fadeUp = {
 
 export default function SettingsPage() {
   return (
-    <div className="px-8 py-8 pb-16">
+    <div className="px-4 sm:px-8 py-6 sm:py-8 pb-16">
       {/* Page heading */}
       <motion.div
         variants={fadeUp}

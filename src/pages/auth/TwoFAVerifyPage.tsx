@@ -19,6 +19,7 @@ import {
   IconQuestion,
   IconShieldLock,
 } from "@/utils/icons";
+import Logo from "@/components/ui/Logo";
 
 const PENDING_TTL = 60 * 5;
 
@@ -105,12 +106,7 @@ export default function TwoFAVerifyPage() {
         transition={{ duration: 0.4 }}
         className="flex items-center justify-between px-4 sm:px-10 py-5"
       >
-        <span
-          className="font-mono font-bold text-lg tracking-[0.18em]"
-          style={{ color: C.primary }}
-        >
-          SHRTNR
-        </span>
+        <Logo variant="full" size="md" />
         <div className="flex items-center gap-4 sm:gap-6">
           <a
             href="#"

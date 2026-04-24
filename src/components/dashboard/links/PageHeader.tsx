@@ -1,5 +1,7 @@
+import CreateLinkModal from "@/components/modals/CreateLinkModal";
 import { IconPlus } from "@/utils/icons";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
+import { useState } from "react";
 
 interface PageHeaderProps {
   filter: FilterTab;
@@ -23,6 +25,9 @@ type FilterTab = "ALL" | "ACTIVE" | "DISABLED";
 
 export default function PageHeader({ filter, setFilter }: PageHeaderProps) {
   const tabs: FilterTab[] = ["ALL", "ACTIVE", "DISABLED"];
+
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
   return (
     <motion.div
       variants={fadeUp}
@@ -38,7 +43,7 @@ export default function PageHeader({ filter, setFilter }: PageHeaderProps) {
       </p>
 
       {/* Title row */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1
           className="font-bold text-white leading-[1.05] tracking-[-0.03em]"
           style={{ fontSize: "clamp(2rem, 4vw, 2.75rem)" }}
@@ -46,15 +51,15 @@ export default function PageHeader({ filter, setFilter }: PageHeaderProps) {
           My Links
         </h1>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
           {/* Filter tabs */}
-          <div className="flex items-center gap-1 p-1 rounded-xl bg-surface-container">
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-surface-container w-full sm:w-auto">
             {tabs.map((t) => (
               <button
                 key={t}
                 onClick={() => setFilter(t)}
                 className={[
-                  "px-4 py-1.75 rounded-lg text-[11px] font-bold tracking-widest transition-all duration-150",
+                  "flex-1 sm:flex-none px-4 py-1.75 rounded-lg text-[11px] font-bold tracking-widest transition-all duration-150",
                   filter === t
                     ? "bg-surface-container-highest text-white"
                     : "text-muted hover:text-white",
@@ -66,12 +71,21 @@ export default function PageHeader({ filter, setFilter }: PageHeaderProps) {
           </div>
 
           {/* CTA */}
-          <button className="flex items-center gap-2 px-5 py-2.25 rounded-xl text-[13px] font-bold text-white tracking-wide whitespace-nowrap transition-opacity duration-150 hover:opacity-90 active:scale-[0.98] [background:var(--gradient-primary)]">
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center justify-center gap-2 px-5 py-2.25 rounded-xl text-[13px] font-bold text-white tracking-wide whitespace-nowrap transition-opacity duration-150 hover:opacity-90 active:scale-[0.98] w-full sm:w-auto [background:var(--gradient-primary)]"
+          >
             <IconPlus />
             Create New Link
           </button>
         </div>
       </div>
+
+      <AnimatePresence>
+        {showCreateModal && (
+          <CreateLinkModal onClose={() => setShowCreateModal(false)} />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

@@ -50,9 +50,9 @@ export default function ShortenWidget() {
       initial="hidden"
       animate="visible"
       custom={1}
-      className="rounded-xl p-6 bg-surface-container"
+      className="rounded-xl p-4 sm:p-6 bg-surface-container"
     >
-      <div className="flex items-end gap-3">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-end gap-3">
         {/* Long URL */}
         <div className="flex-1 min-w-0">
           <label className="block text-[11px] font-semibold tracking-widest mb-2.5 text-primary">
@@ -72,7 +72,7 @@ export default function ShortenWidget() {
         </div>
 
         {/* Custom alias */}
-        <div className="w-52.5 shrink-0">
+        <div className="w-full sm:w-52.5 shrink-0">
           <label className="block text-[11px] font-semibold tracking-widest mb-2.5 text-primary">
             CUSTOM ALIAS (OPTIONAL)
           </label>
@@ -89,7 +89,7 @@ export default function ShortenWidget() {
         {result ? (
           <button
             onClick={handleReset}
-            className="px-7 py-2.75 rounded-xl text-[13px] font-extrabold text-white tracking-[0.12em] transition-opacity duration-150 hover:opacity-90 active:scale-[0.98] shrink-0 bg-surface-container-high"
+            className="w-full sm:w-auto px-7 py-2.75 rounded-xl text-[13px] font-extrabold text-white tracking-[0.12em] transition-opacity duration-150 hover:opacity-90 active:scale-[0.98] shrink-0 bg-surface-container-high"
           >
             NEW
           </button>
@@ -97,7 +97,7 @@ export default function ShortenWidget() {
           <button
             onClick={handleShorten}
             disabled={isPending || !longUrl.trim()}
-            className="px-7 py-2.75 rounded-xl text-[13px] font-extrabold text-white tracking-[0.12em] transition-opacity duration-150 hover:opacity-90 active:scale-[0.98] shrink-0 [background:var(--gradient-primary)] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full sm:w-auto px-7 py-2.75 rounded-xl text-[13px] font-extrabold text-white tracking-[0.12em] transition-opacity duration-150 hover:opacity-90 active:scale-[0.98] shrink-0 [background:var(--gradient-primary)] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isPending ? "..." : "SHORTEN"}
           </button>
@@ -110,12 +110,12 @@ export default function ShortenWidget() {
       )}
 
       {/* Preview row */}
-      <div className="flex items-center justify-between mt-5">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 mt-5">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <span className="text-[13px] text-muted">
             {result ? "Shortened:" : "Preview:"}
           </span>
-          <span className="px-2.5 py-1 rounded-lg text-[13px] font-mono font-medium bg-primary/15 text-primary">
+          <span className="px-2.5 py-1 rounded-lg text-[13px] font-mono font-medium bg-primary/15 text-primary break-all">
             {shortUrl}
           </span>
           {result && (

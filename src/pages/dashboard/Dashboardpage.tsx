@@ -69,7 +69,7 @@ function StatCardSkeleton({ delay }: { delay: number }) {
       initial="hidden"
       animate="visible"
       custom={delay}
-      className="rounded-xl p-5 bg-surface-container animate-pulse"
+      className="rounded-xl p-4 sm:p-5 bg-surface-container animate-pulse"
     >
       <div className="flex items-start justify-between mb-3">
         <div className="w-8 h-8 rounded-lg bg-white/[0.07]" />
@@ -95,7 +95,7 @@ function StatsGrid() {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-4 gap-4 mt-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mt-6">
         {[3, 3.5, 4, 4.5].map((d) => (
           <StatCardSkeleton key={d} delay={d} />
         ))}
@@ -104,7 +104,7 @@ function StatsGrid() {
   }
 
   return (
-    <div className="grid grid-cols-4 gap-4 mt-6">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mt-6">
       <StatCard
         delay={3}
         iconBgClass="bg-primary/12"
@@ -204,7 +204,7 @@ function UpgradeCard() {
       initial="hidden"
       animate="visible"
       custom={12}
-      className="rounded-xl p-5 mt-4 bg-surface-container"
+      className="rounded-xl p-4 sm:p-5 mt-4 bg-surface-container"
     >
       <div className="text-2.5 font-bold tracking-[0.15em] uppercase mb-2.5 text-primary">
         UNLIMITED SCALE
@@ -226,15 +226,15 @@ function UpgradeCard() {
 // DashboardPage
 export default function DashboardPage() {
   return (
-    <div className="px-8 py-8 pb-12">
+    <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-12">
       <motion.div
         variants={fadeUp}
         initial="hidden"
         animate="visible"
         custom={0}
-        className="mb-7"
+        className="mb-6 sm:mb-7"
       >
-        <h1 className="text-[2rem] font-bold text-white leading-none">
+        <h1 className="text-[1.6rem] sm:text-[2rem] font-bold text-white leading-none">
           Dashboard
         </h1>
         <p className="text-[13px] mt-1.75 text-muted">
@@ -245,11 +245,11 @@ export default function DashboardPage() {
       <ShortenWidget />
       <StatsGrid />
 
-      <div className="grid grid-cols-12 gap-6 mt-8">
-        <div className="col-span-7">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 mt-6 sm:mt-8">
+        <div className="lg:col-span-7">
           <RecentLinks />
         </div>
-        <div className="col-span-5">
+        <div className="lg:col-span-5">
           <RecentActivity />
           <UpgradeCard />
         </div>

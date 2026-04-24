@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { getUser } from "@/lib/storage";
 import CreateLinkModal from "@/components/modals/CreateLinkModal";
 import LogoutModal from "@/components/modals/LogoutModal";
+import Logo from "@/components/ui/Logo";
 import {
   IconBarChart,
   IconGrid,
@@ -33,32 +34,9 @@ function Sidebar({ onLogout }: { onLogout: () => void }) {
       transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
       className="fixed left-0 top-0 h-screen w-48 flex flex-col z-20 bg-bg border-r border-border"
     >
-      {/* Logo */}
-      <div className="flex items-center gap-2.5 px-5 pt-[22px] pb-8">
-        <div className="w-8 h-8 rounded-[9px] flex items-center justify-center shrink-0 [background:var(--gradient-primary)]">
-          <svg width="16" height="10" viewBox="0 0 32 16" fill="none">
-            <path
-              d="M16 8C13 4.5 10 2 6 2a6 6 0 0 0 0 12c4 0 7-3.5 10-6z"
-              stroke="white"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-            />
-            <path
-              d="M16 8c3 3.5 6 6 10 6a6 6 0 0 0 0-12c-4 0-7 3.5-10 6z"
-              stroke="white"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-            />
-          </svg>
-        </div>
-        <div>
-          <div className="text-white font-bold text-[15px] leading-none tracking-wide">
-            Shrtnr
-          </div>
-          <div className="text-[9px] font-semibold tracking-[0.15em] uppercase mt-[3px] text-muted">
-            PRECISION VOID
-          </div>
-        </div>
+      {/* ✅ Logo component — full variant with tagline fits the sidebar header */}
+      <div className="px-5 pt-[22px] pb-8">
+        <Logo variant="full" size="md" />
       </div>
 
       {/* Primary nav */}
@@ -141,33 +119,10 @@ function MobileDrawer({
             transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
             className="fixed left-0 top-0 h-screen w-64 z-40 flex flex-col bg-bg border-r border-border lg:hidden"
           >
-            {/* Logo + user */}
+            {/* ✅ Logo component + user info */}
             <div className="px-5 pt-6 pb-5 border-b border-border">
-              <div className="flex items-center gap-2.5 mb-5">
-                <div className="w-8 h-8 rounded-[9px] flex items-center justify-center shrink-0 [background:var(--gradient-primary)]">
-                  <svg width="16" height="10" viewBox="0 0 32 16" fill="none">
-                    <path
-                      d="M16 8C13 4.5 10 2 6 2a6 6 0 0 0 0 12c4 0 7-3.5 10-6z"
-                      stroke="white"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M16 8c3 3.5 6 6 10 6a6 6 0 0 0 0-12c-4 0-7 3.5-10 6z"
-                      stroke="white"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <div className="text-white font-bold text-[15px] leading-none tracking-wide">
-                    Shrtnr
-                  </div>
-                  <div className="text-[9px] font-semibold tracking-[0.15em] uppercase mt-[3px] text-muted">
-                    PRECISION VOID
-                  </div>
-                </div>
+              <div className="mb-5">
+                <Logo variant="full" size="md" />
               </div>
 
               {/* User info */}
@@ -278,7 +233,7 @@ function TopBar({
       </button>
 
       {/* Search */}
-      <div className="flex-1 flex items-center gap-3 px-4 py-[10px] rounded-xl bg-surface-container">
+      <div className="flex-1 flex items-center gap-3 px-4 py-[10px] rounded-xl bg-surface-container min-w-0">
         <span className="text-muted shrink-0">
           <IconSearch />
         </span>
@@ -289,7 +244,7 @@ function TopBar({
         />
       </div>
 
-      {/* Create New — hidden on small screens (available in mobile drawer) */}
+      {/* Create New — hidden on small screens */}
       <button
         onClick={onCreateNew}
         className="hidden sm:flex px-[18px] py-[10px] rounded-xl text-[13px] font-bold text-white tracking-wide whitespace-nowrap transition-opacity duration-150 hover:opacity-90 active:scale-[0.98] [background:var(--gradient-primary)]"
@@ -329,7 +284,7 @@ export default function DashboardLayout() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-bg">
+    <div className="flex min-h-screen bg-bg overflow-x-hidden">
       {/* Desktop sidebar — visible lg and above */}
       <div className="hidden lg:block">
         <Sidebar onLogout={() => setShowLogoutModal(true)} />
@@ -344,12 +299,12 @@ export default function DashboardLayout() {
       />
 
       {/* Main content */}
-      <div className="flex-1 lg:ml-48 flex flex-col min-h-screen">
+      <div className="flex-1 lg:ml-48 flex flex-col min-h-screen min-w-0">
         <TopBar
           onCreateNew={() => setShowCreateModal(true)}
           onMenuToggle={() => setMobileNavOpen((p) => !p)}
         />
-        <main className="flex-1">
+        <main className="flex-1 min-w-0">
           <Outlet />
         </main>
       </div>

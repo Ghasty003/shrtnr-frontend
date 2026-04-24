@@ -28,7 +28,7 @@ function StatusFooter() {
       initial="hidden"
       animate="visible"
       custom={9}
-      className="flex items-center justify-between px-8 py-3 mt-8 -mx-8 bg-surface-container border-t border-border"
+      className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between px-4 sm:px-8 py-3 mt-8 -mx-4 sm:-mx-8 bg-surface-container border-t border-border"
     >
       <div className="flex items-center gap-3 text-[10px] font-mono font-semibold tracking-widest text-muted">
         <span className="flex items-center gap-1.5">
@@ -50,19 +50,19 @@ export default function LinkDetailPage() {
   const { data: link, isLoading } = useLinkDetail(slug);
 
   return (
-    <div className="px-8 py-8 pb-0">
+    <div className="px-4 sm:px-8 py-6 sm:py-8 pb-0">
       <DetailHeader slug={slug} link={link} isLoading={isLoading} />
       <StatCards stats={link?.stats} isLoading={isLoading} />
       <ClicksOverTimeChart slug={slug} />
 
       <div className="grid grid-cols-12 gap-6 mb-8">
-        <div className="col-span-4">
+        <div className="col-span-12 sm:col-span-6 lg:col-span-4">
           <TopCountries slug={slug} />
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 sm:col-span-6 lg:col-span-4">
           <TrafficReferrers slug={slug} />
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 sm:col-span-6 lg:col-span-4">
           <DeviceDistribution slug={slug} />
         </div>
       </div>

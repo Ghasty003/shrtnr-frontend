@@ -47,7 +47,7 @@ function formatDate(iso: string) {
 function RowSkeleton() {
   return (
     <div
-      className="grid items-center px-5 py-5 border-t border-border animate-pulse"
+      className="flex flex-col gap-4 md:grid items-center px-5 py-5 border-t border-border animate-pulse"
       style={{ gridTemplateColumns: COL }}
     >
       <div className="pr-6 space-y-2">
@@ -88,7 +88,7 @@ function LinkRow({ link, index }: { link: ShortUrl; index: number }) {
       initial="hidden"
       animate="visible"
       custom={3 + index * 0.4}
-      className="grid items-center px-5 py-5 border-t border-border transition-colors duration-150 hover:bg-surface-container-high cursor-pointer"
+      className="flex flex-col gap-3 md:grid items-start md:items-center px-5 py-5 border-t border-border transition-colors duration-150 hover:bg-surface-container-high cursor-pointer"
       style={{ gridTemplateColumns: COL }}
       onClick={() => navigate(`/dashboard/links/${link.short_code}`)}
     >
@@ -172,7 +172,7 @@ export default function LinksTable({ filter }: LinksTableProps) {
     >
       {/* Column headers */}
       <div
-        className="grid items-center px-5 py-3.5"
+        className="hidden md:grid items-center px-5 py-3.5"
         style={{ gridTemplateColumns: COL }}
       >
         {["LINK DETAILS", "PERFORMANCE", "STATUS", "CREATED", "ACTIONS"].map(
@@ -216,14 +216,14 @@ export default function LinksTable({ filter }: LinksTableProps) {
       </div>
 
       {/* Pagination footer */}
-      <div className="flex items-center justify-between px-5 py-3.5 border-t border-border">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center justify-between px-5 py-3.5 border-t border-border">
         <span className="text-[10.5px] font-semibold tracking-[0.08em] text-muted">
           {data
             ? `SHOWING ${start}–${end} OF ${data.totalCount.toLocaleString()} ITEMS`
             : ""}
         </span>
 
-        <div className="flex items-center gap-1">
+        <div className="flex flex-wrap items-center gap-1">
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={!data?.hasPrevPage}

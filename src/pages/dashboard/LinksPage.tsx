@@ -27,7 +27,7 @@ function InsightCallout() {
       initial="hidden"
       animate="visible"
       custom={7}
-      className="rounded-xl p-6 bg-surface-container flex items-center gap-5"
+      className="rounded-xl p-5 sm:p-6 bg-surface-container flex flex-col sm:flex-row sm:items-center gap-5"
     >
       {/* Icon */}
       <div className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0 [background:var(--gradient-primary)]">
@@ -48,7 +48,7 @@ function InsightCallout() {
       </div>
 
       {/* CTA */}
-      <button className="px-6 py-2.5 rounded-xl text-[12px] font-bold tracking-[0.12em] uppercase text-white whitespace-nowrap transition-opacity duration-150 hover:opacity-90 active:scale-[0.98] shrink-0 bg-surface-container-highest">
+      <button className="px-6 py-2.5 rounded-xl text-[12px] font-bold tracking-[0.12em] uppercase text-white whitespace-nowrap transition-opacity duration-150 hover:opacity-90 active:scale-[0.98] sm:shrink-0 w-full sm:w-auto bg-surface-container-highest">
         RUN ANALYSIS
       </button>
     </motion.div>
@@ -59,7 +59,7 @@ export default function LinksPage() {
   const [filter, setFilter] = useState<FilterTab>("ALL");
 
   return (
-    <div className="px-8 py-8 pb-12">
+    <div className="px-4 sm:px-8 py-6 sm:py-8 pb-12 overflow-x-hidden">
       <PageHeader filter={filter} setFilter={setFilter} />
       <StatsStrip />
       <LinksTable key={filter} filter={filter} />

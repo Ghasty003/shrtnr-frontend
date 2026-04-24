@@ -127,7 +127,7 @@ export default function RecentActivity() {
       initial="hidden"
       animate="visible"
       custom={8}
-      className="rounded-xl p-5 bg-surface-container"
+      className="rounded-xl p-4 sm:p-5 bg-surface-container"
     >
       <h2 className="text-[1.25rem] font-bold text-white mb-1">
         Recent Activity

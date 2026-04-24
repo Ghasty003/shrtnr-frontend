@@ -56,8 +56,8 @@ export default function DetailHeader({
         </p>
       </div>
 
-      <div className="flex items-start justify-between gap-6">
-        <div>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+        <div className="min-w-0">
           {isLoading ? (
             <div className="animate-pulse space-y-2.5">
               <div className="h-9 w-64 rounded-lg bg-white/[0.07]" />
@@ -71,9 +71,9 @@ export default function DetailHeader({
               >
                 shrt.nr/{slug}
               </h1>
-              <div className="flex items-center gap-2 text-muted">
+              <div className="flex items-center gap-2 text-muted min-w-0">
                 <IconArrowRight />
-                <span className="text-[12.5px] font-mono truncate max-w-lg">
+                <span className="text-[12.5px] font-mono truncate max-w-[60vw] sm:max-w-lg">
                   {link?.long_url}
                 </span>
               </div>
@@ -81,7 +81,7 @@ export default function DetailHeader({
           )}
         </div>
 
-        <div className="flex items-center gap-2 shrink-0 mt-1">
+        <div className="flex items-center gap-2 sm:shrink-0 sm:mt-1">
           <button className="flex items-center gap-2 px-4 py-2.25 rounded-xl text-[12.5px] font-semibold text-white bg-surface-container transition-colors duration-150 hover:bg-surface-container-high">
             <IconShare />
             Export

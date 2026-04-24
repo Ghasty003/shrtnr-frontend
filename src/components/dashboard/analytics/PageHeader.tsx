@@ -30,7 +30,7 @@ export default function PageHeader() {
       initial="hidden"
       animate="visible"
       custom={0}
-      className="flex items-end justify-between mb-8"
+      className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-8"
     >
       <div>
         <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary mb-2">
@@ -44,7 +44,7 @@ export default function PageHeader() {
         </h1>
       </div>
 
-      <div className="flex items-center gap-1 p-1 rounded-xl bg-surface-container">
+      <div className="flex items-center gap-1 p-1 rounded-xl bg-surface-container self-start sm:self-auto">
         {tabs.map((t) => (
           <button
             key={t.key}

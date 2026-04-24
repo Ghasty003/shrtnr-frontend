@@ -79,7 +79,7 @@ export default function ClicksOverTimeChart({
       custom={3}
       className="rounded-xl p-6 bg-surface-container mb-6"
     >
-      <div className="flex items-start justify-between mb-1">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-1">
         <div>
           <h2 className="text-[1rem] font-bold text-white leading-none mb-1.5">
             Clicks Over Time
@@ -88,7 +88,7 @@ export default function ClicksOverTimeChart({
             Link performance across the selected range
           </p>
         </div>
-        <div className="flex items-center gap-1 p-1 rounded-xl bg-surface-container-high">
+        <div className="flex items-center gap-1 p-1 rounded-xl bg-surface-container-high self-start">
           {ranges.map((r) => (
             <button
               key={r}

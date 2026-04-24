@@ -85,7 +85,7 @@ export default function ClicksOverTimeChart() {
       custom={4}
       className="rounded-xl p-6 bg-surface-container mb-6"
     >
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-6">
         <div>
           <h2 className="text-[1rem] font-bold text-white leading-none mb-1.5">
             Combined Clicks Over Time
@@ -94,7 +94,7 @@ export default function ClicksOverTimeChart() {
             Aggregate account traffic across all active channels
           </p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 sm:shrink-0">
           {[
             { color: "#BD9DFF", label: "Direct Traffic" },
             { color: "#6D50C4", label: "Referred Traffic" },
