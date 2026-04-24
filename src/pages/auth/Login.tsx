@@ -16,7 +16,6 @@ import {
 import { useLogin } from "@/hooks/useLogin";
 import { RateLimitError } from "@/lib/axios";
 
-// Validation Schema
 const schema = z.object({
   email: z.email("Enter a valid email address."),
   password: z.string().min(1, "Access key is required."),
@@ -25,7 +24,6 @@ const schema = z.object({
 
 type LoginForm = z.infer<typeof schema>;
 
-// Icons
 const IconAt = () => (
   <svg
     width="15"
@@ -73,14 +71,15 @@ const IconLock = ({ open }: { open: boolean }) =>
     </svg>
   );
 
-// Custom Checkbox
-interface CheckboxProps {
+function TerminalCheckbox({
+  label,
+  checked,
+  onChange,
+}: {
   label: string;
   checked: boolean;
   onChange: () => void;
-}
-
-function TerminalCheckbox({ label, checked, onChange }: CheckboxProps) {
+}) {
   return (
     <button
       type="button"
@@ -121,7 +120,6 @@ function TerminalCheckbox({ label, checked, onChange }: CheckboxProps) {
   );
 }
 
-// Page
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -143,7 +141,15 @@ export default function LoginPage() {
     login(
       { email: data.email, password: data.password, deviceId },
       {
-        onSuccess: () => navigate("/dashboard"),
+        onSuccess: (res) => {
+          if (res.data.requiresTwoFactor) {
+            navigate("/auth/2fa", {
+              state: { sessionKey: res.data.sessionKey, email: data.email },
+            });
+          } else {
+            navigate("/dashboard");
+          }
+        },
       },
     );
   };
@@ -156,12 +162,12 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: C.bg }}>
-      {/* Top nav */}
+      {/* Nav */}
       <motion.nav
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="flex items-center justify-between px-6 sm:px-10 py-5"
+        className="flex items-center justify-between px-4 sm:px-10 py-5"
       >
         <span
           className="font-mono font-bold text-lg tracking-[0.18em]"
@@ -171,18 +177,18 @@ export default function LoginPage() {
         </span>
       </motion.nav>
 
-      {/* Main content */}
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-10">
+      {/* Main */}
+      <main className="flex-1 flex flex-col items-center justify-center px-4 py-8 sm:py-10">
         {/* Heading */}
         <motion.div
-          className="text-center mb-10"
+          className="text-center mb-8 sm:mb-10"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.05 }}
         >
           <h1
             className="font-mono font-black leading-[0.95] tracking-[-0.02em] uppercase"
-            style={{ fontSize: "clamp(2.75rem, 8vw, 4.5rem)" }}
+            style={{ fontSize: "clamp(2rem, 8vw, 4.5rem)" }}
           >
             <span className="block text-white">Identity</span>
             <span className="block" style={{ color: C.primary }}>
@@ -198,14 +204,13 @@ export default function LoginPage() {
         </motion.div>
 
         {/* Card */}
-        <div className="w-full max-w-97.5">
-          <AuthCard className="px-7 py-8">
+        <div className="w-full max-w-sm sm:max-w-97.5">
+          <AuthCard className="px-5 py-7 sm:px-7 sm:py-8">
             <form
               onSubmit={handleSubmit(onSubmit)}
               className="flex flex-col gap-5"
               noValidate
             >
-              {/* Email */}
               <motion.div
                 variants={fadeUp as any}
                 initial="hidden"
@@ -222,7 +227,6 @@ export default function LoginPage() {
                 />
               </motion.div>
 
-              {/* Password */}
               <motion.div
                 variants={fadeUp as any}
                 initial="hidden"
@@ -257,7 +261,6 @@ export default function LoginPage() {
                 />
               </motion.div>
 
-              {/* Remember me */}
               <motion.div
                 variants={fadeUp as any}
                 initial="hidden"
@@ -285,7 +288,6 @@ export default function LoginPage() {
                 </motion.p>
               )}
 
-              {/* Submit */}
               <motion.div
                 variants={fadeUp as any}
                 initial="hidden"
@@ -300,12 +302,11 @@ export default function LoginPage() {
             </form>
           </AuthCard>
 
-          {/* Register link */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.45 }}
-            className="text-center mt-8"
+            className="text-center mt-6 sm:mt-8"
           >
             <p
               className="text-[11px] tracking-[0.15em] uppercase mb-3"
@@ -326,12 +327,12 @@ export default function LoginPage() {
 
       <AuthFooter
         left="© 2024 SHRTNR PRECISION SYSTEMS"
-        links={[
-          { label: "STATUS", href: "#" },
-          { label: "PRIVACY", href: "#" },
-          { label: "TERMS", href: "#" },
-          { label: "API", href: "#" },
-        ]}
+        // links={[
+        //   { label: "STATUS", href: "#" },
+        //   { label: "PRIVACY", href: "#" },
+        //   { label: "TERMS", href: "#" },
+        //   { label: "API", href: "#" },
+        // ]}
       />
     </div>
   );

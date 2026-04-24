@@ -2,6 +2,7 @@ import { IconDownload, IconEdit, IconFilter, IconTrash } from "@/utils/icons";
 import { motion } from "motion/react";
 import { useLinks } from "@/hooks/useLinks";
 import type { ShortUrl } from "@/api/url";
+import { useNavigate } from "react-router";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
@@ -129,6 +130,7 @@ function LinkRow({ link, index }: { link: ShortUrl; index: number }) {
 }
 
 export default function RecentLinks() {
+  const navigate = useNavigate();
   const { data: links, isLoading, isError } = useLinks(5);
 
   return (
@@ -184,7 +186,12 @@ export default function RecentLinks() {
           ))}
 
         <div className="py-3.5 text-center border-t border-border">
-          <button className="text-[11px] font-semibold tracking-widest uppercase text-muted transition-colors duration-150 hover:text-white">
+          <button
+            onClick={() => {
+              navigate("/dashboard/links");
+            }}
+            className="text-[11px] font-semibold tracking-widest uppercase text-muted transition-colors duration-150 hover:text-white"
+          >
             VIEW ALL LINKS
           </button>
         </div>

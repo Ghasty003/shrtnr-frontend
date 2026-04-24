@@ -124,4 +124,80 @@ axiosInstance.interceptors.response.use(
   },
 );
 
+authAxiosInstance.interceptors.request.use((config) => {
+  const token = localStorage.getItem("accessToken");
+  if (token) {
+    config.headers["Authorization"] = `Bearer ${token}`;
+  }
+  return config;
+});
+
+authAxiosInstance.interceptors.response.use(
+  (response: AxiosResponse) => response,
+  async (error: AxiosError) => {
+    const originalRequest = error.config as typeof error.config & {
+      _retry?: boolean;
+    };
+
+    // Rate limited — extract time remaining and surface it
+    if (error.response?.status === 429) {
+      const seconds = parseRetryAfter(error);
+      console.log([seconds]);
+      return Promise.reject(new RateLimitError("Too many requests.", seconds));
+    }
+
+    // Access token expired — attempt silent refresh
+    const errorCode = (error.response?.data as Record<string, string>)?.code;
+    if (
+      error.response?.status === 401 &&
+      errorCode === "TOKEN_EXPIRED" &&
+      !originalRequest._retry
+    ) {
+      // If a refresh is already in flight, queue this request until it resolves
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        }).then((token) => {
+          originalRequest.headers!["Authorization"] = `Bearer ${token}`;
+          return axiosInstance(originalRequest);
+        });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        const { data } = await authAxiosInstance.post("/api/v1/auth/refresh");
+        const newToken: string = data.data.accessToken;
+
+        // Persist and re-attach for all future requests
+        localStorage.setItem("accessToken", newToken);
+        axiosInstance.defaults.headers.common["Authorization"] =
+          `Bearer ${newToken}`;
+
+        flushQueue(null, newToken);
+        originalRequest.headers!["Authorization"] = `Bearer ${newToken}`;
+        return axiosInstance(originalRequest);
+      } catch (refreshError) {
+        // Refresh token is also expired — force logout
+        flushQueue(refreshError, null);
+        localStorage.removeItem("accessToken");
+        delete axiosInstance.defaults.headers.common["Authorization"];
+        window.location.href = "/auth/login";
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
+    }
+
+    // Unwrap the backend error message if it exists, otherwise fall back
+    // to a generic message so call sites never have to do this themselves
+    const message =
+      (error.response?.data as Record<string, string>)?.message ??
+      error.message ??
+      "An unexpected error occurred.";
+
+    return Promise.reject(new Error(message));
+  },
+);
 export default axiosInstance;

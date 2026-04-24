@@ -7,7 +7,7 @@ import {
 } from "motion/react";
 import { useShortUrl } from "@/hooks/useShortUrl";
 import { type ShortUrl } from "@/api/url";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 interface FeatureCardProps {
   icon: ReactNode;
@@ -323,16 +323,16 @@ function Navbar() {
               className="flex items-center gap-3 mt-4 pt-4"
               style={{ borderTop: "1px solid rgba(73,72,71,0.15)" }}
             >
-              <a
-                href="#"
+              <Link
+                to="/auth/login"
                 onClick={() => setMenuOpen(false)}
                 className="flex-1 text-sm font-medium text-center py-2.5 rounded-xl transition-colors duration-150"
                 style={{ color: "#71717A", background: "rgba(73,72,71,0.15)" }}
               >
                 Login
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                to="/auth/register"
                 onClick={() => setMenuOpen(false)}
                 className="flex-1 text-sm font-medium text-center text-white py-2.5 rounded-xl"
                 style={{
@@ -341,7 +341,7 @@ function Navbar() {
                 }}
               >
                 Sign Up
-              </a>
+              </Link>
             </div>
           </motion.div>
         )}

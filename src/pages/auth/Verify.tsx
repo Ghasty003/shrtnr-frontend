@@ -79,7 +79,7 @@ function TerminalLog({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.7 }}
-      className="w-full max-w-105 rounded-xl px-5 py-4 mt-5"
+      className="w-full max-w-sm sm:max-w-105 rounded-xl px-4 sm:px-5 py-4 mt-5"
       style={{ background: "#0A0A0A", border: `1px solid ${C.border}` }}
     >
       <div className="flex items-center gap-2 mb-2">
@@ -144,7 +144,7 @@ export default function VerifyPage() {
       {
         onSuccess: () => {
           setTerminalStatus("success");
-          setTimeout(() => navigate("/"), 800);
+          setTimeout(() => navigate("/dashboard"), 1000);
         },
         onError: (err) => {
           setTerminalStatus("error");
@@ -174,9 +174,9 @@ export default function VerifyPage() {
       style={{ background: C.bg }}
     >
       {/* Main content */}
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-10 w-full">
-        <div className="w-full max-w-105">
-          <AuthCard>
+      <main className="flex-1 flex flex-col items-center justify-center px-4 py-8 sm:py-10 w-full">
+        <div className="w-full max-w-sm sm:max-w-105">
+          <AuthCard className="px-5 py-7 sm:px-7 sm:py-8">
             {/* Mail icon badge */}
             <motion.div
               variants={fadeUp as any}
@@ -186,7 +186,7 @@ export default function VerifyPage() {
               className="flex justify-center mb-6"
             >
               <div
-                className="w-16 h-16 rounded-2xl flex items-center justify-center"
+                className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center"
                 style={{
                   background: "rgba(189,157,255,0.1)",
                   border: `1px solid rgba(189,157,255,0.15)`,
@@ -204,7 +204,7 @@ export default function VerifyPage() {
               custom={1}
               className="text-center mb-6"
             >
-              <h1 className="text-2xl font-bold text-white mb-3">
+              <h1 className="text-xl sm:text-2xl font-bold text-white mb-3">
                 Check your inbox
               </h1>
               <p className="text-sm leading-relaxed" style={{ color: C.muted }}>
@@ -234,15 +234,15 @@ export default function VerifyPage() {
                       value={field.value}
                       onChange={field.onChange}
                       numInputs={6}
-                      renderSeparator={<span className="w-2" />}
+                      renderSeparator={<span className="w-1.5 sm:w-2" />}
                       shouldAutoFocus
                       renderInput={(props) => (
                         <input
                           {...props}
                           className="text-xl font-mono font-bold text-center rounded-xl outline-none transition-all duration-150"
                           style={{
-                            width: "46px",
-                            height: "54px",
+                            width: "clamp(38px, 11vw, 46px)",
+                            height: "clamp(44px, 13vw, 54px)",
                             background: C.surfaceHigh,
                             color: C.white,
                             border: `1px solid ${errors.otp ? "#EF4444" : C.border}`,
