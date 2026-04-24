@@ -7,7 +7,8 @@ import {
 } from "motion/react";
 import { useShortUrl } from "@/hooks/useShortUrl";
 import { type ShortUrl } from "@/api/url";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
+import Logo from "@/components/ui/Logo";
 
 interface FeatureCardProps {
   icon: ReactNode;
@@ -172,7 +173,6 @@ const IconCheck = () => (
   </svg>
 );
 
-// Hamburger icon — two states handled by parent
 const IconMenu = () => (
   <svg
     width="20"
@@ -209,7 +209,6 @@ const IconX = () => (
 // Navbar
 function Navbar() {
   const navigate = useNavigate();
-
   const navItems: string[] = ["Features", "API", "Docs"];
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
 
@@ -226,11 +225,10 @@ function Navbar() {
           borderBottom: "1px solid rgba(73,72,71,0.15)",
         }}
       >
-        <span className="text-white font-bold text-[17px] tracking-tight">
-          Shrtnr
-        </span>
+        {/* ✅ Logo component — wordmark variant (no tagline) suits the compact navbar */}
+        <Logo variant="full" size="md" />
 
-        {/* Desktop nav links — hidden on mobile */}
+        {/* Desktop nav links */}
         <div className="hidden md:flex items-center gap-7">
           {navItems.map((item, i) => (
             <motion.a
@@ -250,7 +248,7 @@ function Navbar() {
           ))}
         </div>
 
-        {/* Desktop auth — hidden on mobile */}
+        {/* Desktop auth */}
         <div className="hidden md:flex items-center gap-4">
           <motion.p
             onClick={() => navigate("/auth/login")}
@@ -318,21 +316,20 @@ function Navbar() {
               </a>
             ))}
 
-            {/* Auth row inside mobile menu */}
             <div
               className="flex items-center gap-3 mt-4 pt-4"
               style={{ borderTop: "1px solid rgba(73,72,71,0.15)" }}
             >
-              <a
-                href="#"
+              <Link
+                to="/auth/login"
                 onClick={() => setMenuOpen(false)}
                 className="flex-1 text-sm font-medium text-center py-2.5 rounded-xl transition-colors duration-150"
                 style={{ color: "#71717A", background: "rgba(73,72,71,0.15)" }}
               >
                 Login
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                to="/auth/register"
                 onClick={() => setMenuOpen(false)}
                 className="flex-1 text-sm font-medium text-center text-white py-2.5 rounded-xl"
                 style={{
@@ -341,7 +338,7 @@ function Navbar() {
                 }}
               >
                 Sign Up
-              </a>
+              </Link>
             </div>
           </motion.div>
         )}
@@ -353,7 +350,6 @@ function Navbar() {
 // URL Result Card
 function UrlCard({ result }: { result: ShortUrl }) {
   const [copied, setCopied] = useState<boolean>(false);
-
   const shortUrl = `${import.meta.env.VITE_API_URL}/${result.short_code}`;
 
   const handleCopy = (): void => {
@@ -400,7 +396,6 @@ function UrlCard({ result }: { result: ShortUrl }) {
         }}
       >
         {copied ? <IconCheck /> : <IconCopy />}
-        {/* Hide label on very small screens, keep icon */}
         <span className="hidden xs:inline">{copied ? "Copied!" : "Copy"}</span>
         <span className="xs:hidden">{copied ? "!" : ""}</span>
       </motion.button>
@@ -417,7 +412,7 @@ function HeroSection() {
     const trimmed = inputUrl.trim();
     if (!trimmed) return;
     reset();
-    shorten(trimmed);
+    shorten({ longUrl: trimmed });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
@@ -481,7 +476,6 @@ function HeroSection() {
         custom={3}
         className="mt-8 sm:mt-10 w-full max-w-132.5"
       >
-        {/* Input row — stacks on very small screens */}
         <div
           className="flex flex-col xs:flex-row items-stretch xs:items-center rounded-xl overflow-hidden p-1.25 gap-1.25 xs:gap-0"
           style={{
@@ -539,7 +533,6 @@ function HeroSection() {
           {result && <UrlCard result={result} />}
         </AnimatePresence>
 
-        {/* Placeholder shown before any request is made */}
         <AnimatePresence>
           {!result && !isPending && (
             <motion.div
@@ -784,7 +777,8 @@ function Footer() {
       }}
     >
       <div>
-        <span className="text-white font-bold text-[16px]">Shrtnr</span>
+        {/* ✅ Logo component — wordmark only, no tagline needed in footer */}
+        <Logo variant="wordmark" size="sm" />
         <p
           className="text-[11px] tracking-widest mt-2"
           style={{ color: "#3F3F46" }}
@@ -793,7 +787,6 @@ function Footer() {
         </p>
       </div>
 
-      {/* Footer columns — wrap on very small screens */}
       <div className="flex flex-wrap gap-x-10 gap-y-8 sm:gap-14">
         {footerColumns.map((col) => (
           <div key={col.heading} className="flex flex-col gap-3">

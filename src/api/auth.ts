@@ -1,4 +1,4 @@
-import axiosInstance from "@/lib/axios";
+import axiosInstance, { authAxiosInstance } from "@/lib/axios";
 
 // Types
 
@@ -33,11 +33,23 @@ export interface LoginPayload {
 
 export interface LoginResponse {
   success: boolean;
-  data: {
-    accessToken: string;
-    deviceId: string;
-    user: { id: number; username: string; email: string };
-  };
+  data:
+    | {
+        requiresTwoFactor: true;
+        sessionKey: string;
+      }
+    | {
+        requiresTwoFactor: false;
+        accessToken: string;
+        deviceId: string;
+        user: {
+          id: number;
+          username: string;
+          email: string;
+          autoCopy: boolean;
+          twoFactorEnabled: boolean;
+        };
+      };
 }
 
 // API functions
@@ -63,9 +75,19 @@ export async function verifyOtp(
 }
 
 export async function loginUser(payload: LoginPayload): Promise<LoginResponse> {
-  const res = await axiosInstance.post<LoginResponse>(
+  const res = await authAxiosInstance.post<LoginResponse>(
     "/api/v1/auth/login",
     payload,
   );
   return res.data;
+}
+
+export async function logoutUser(): Promise<void> {
+  // Needs withCredentials to send the httpOnly refresh token cookie so the
+  // server can revoke it. Fire-and-forget — we clear local state regardless.
+  await authAxiosInstance.post("/api/v1/auth/logout");
+}
+
+export async function logoutAllUser(): Promise<void> {
+  await authAxiosInstance.post("/api/v1/auth/logout-all");
 }

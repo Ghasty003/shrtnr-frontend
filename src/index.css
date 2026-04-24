@@ -5,6 +5,17 @@
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-mono: 'Space Mono', 'Courier New', monospace;
    --breakpoint-xs: 480px;
+  --color-bg: #0E0E0E;
+  --color-surface: #141313;
+  --color-surface-container: #1A1919;
+  --color-surface-container-high: #201F1F;
+  --color-surface-container-highest: #272626;
+  --color-primary: #BD9DFF;
+  --color-primary-dim: #8A4CFC;
+  --color-muted: #6B6A6A;
+  --color-muted-dim: #3D3C3C;
+  --color-border: rgba(73, 72, 71, 0.15);
+  --gradient-primary: linear-gradient(135deg, var(--color-primary), var(--color-primary-dim));
 }
 
 @layer base {

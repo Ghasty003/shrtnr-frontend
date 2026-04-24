@@ -15,6 +15,7 @@ import {
 } from "@/components/auth/AuthShared";
 import { useRegister } from "@/hooks/useRegister";
 import { RateLimitError } from "@/lib/axios";
+import Logo from "@/components/ui/Logo";
 
 // Validation Schema
 const schema = z
@@ -181,12 +182,7 @@ export default function Register() {
         transition={{ duration: 0.4 }}
         className="flex items-center px-6 sm:px-10 py-5 w-full"
       >
-        <span
-          className="font-mono font-bold text-lg tracking-[0.18em]"
-          style={{ color: C.primary }}
-        >
-          SHRTNR
-        </span>
+        <Logo variant="full" size="md" />
       </motion.nav>
 
       {/* Card */}
