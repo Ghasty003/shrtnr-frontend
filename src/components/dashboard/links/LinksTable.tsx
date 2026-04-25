@@ -94,7 +94,7 @@ function LinkRow({ link, index }: { link: ShortUrl; index: number }) {
     >
       <div className="min-w-0 pr-6">
         <div className="text-[13px] font-semibold text-primary truncate mb-0.75">
-          shrt.nr/{link.short_code}
+          {import.meta.env.VITE_API_URL}/{link.short_code}
         </div>
         <div className="text-[11.5px] text-muted truncate">{link.long_url}</div>
       </div>

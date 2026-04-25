@@ -558,7 +558,7 @@ function HeroSection() {
                     className="text-sm font-semibold truncate"
                     style={{ color: "#BD9DFF" }}
                   >
-                    shrtnr.dev/alpha-beta-99
+                    {import.meta.env.VITE_API_URL}/alpha-beta-99
                   </p>
                   <p
                     className="text-xs mt-0.5 truncate"

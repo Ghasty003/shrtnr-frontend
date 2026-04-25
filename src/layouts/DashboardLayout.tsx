@@ -214,7 +214,6 @@ function TopBar({
   onMenuToggle: () => void;
 }) {
   const user = getUser();
-  console.log({ user });
   const initial = (user?.username ?? "?")[0].toUpperCase();
 
   return (

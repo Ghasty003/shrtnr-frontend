@@ -94,7 +94,7 @@ export default function TopPerformingLinks() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-[13px] font-semibold text-white truncate">
-                  shrt.nr/{link.short_code}
+                  {import.meta.env.VITE_API_URL}/{link.short_code}
                 </div>
                 <div className="text-[11px] text-muted mt-0.5">
                   {timeAgo(link.created_at)}

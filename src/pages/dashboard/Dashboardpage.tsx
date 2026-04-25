@@ -167,7 +167,9 @@ function StatsGrid() {
         icon={<IconTrending size={15} className="text-red-400" />}
         topRight={null}
         value={
-          stats?.mostClicked ? `shrt.nr/${stats.mostClicked.short_code}` : "—"
+          stats?.mostClicked
+            ? `${import.meta.env.VITE_API_URL}/${stats.mostClicked.short_code}`
+            : "—"
         }
         label="MOST CLICKED"
         bottom={

@@ -164,7 +164,7 @@ export default function CreateLinkModal({ onClose }: CreateLinkModalProps) {
               </div>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[13px] text-muted/60 pointer-events-none select-none">
-                  shrtnr.com/
+                  {import.meta.env.VITE_API_URL}.com/
                 </span>
                 <input
                   type="text"
