@@ -16,7 +16,7 @@ const fadeUp = {
   }),
 };
 
-const SHORT_DOMAIN = import.meta.env.VITE_SHORT_DOMAIN ?? "shrt.nr";
+const SHORT_DOMAIN = import.meta.env.VITE_API_URL ?? "shrt.nr";
 
 export default function ShortenWidget() {
   const [longUrl, setLongUrl] = useState("");

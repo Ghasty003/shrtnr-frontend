@@ -69,7 +69,7 @@ export default function DetailHeader({
                 className="font-bold text-white leading-[1.05] tracking-[-0.02em] mb-2"
                 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)" }}
               >
-                shrt.nr/{slug}
+                {import.meta.env.VITE_API_URL}/{slug}
               </h1>
               <div className="flex items-center gap-2 text-muted min-w-0">
                 <IconArrowRight />

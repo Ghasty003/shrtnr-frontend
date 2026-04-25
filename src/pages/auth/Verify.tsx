@@ -144,7 +144,7 @@ export default function VerifyPage() {
       {
         onSuccess: () => {
           setTerminalStatus("success");
-          setTimeout(() => navigate("/dashboard"), 1000);
+          setTimeout(() => navigate("/auth/login"), 1000);
         },
         onError: (err) => {
           setTerminalStatus("error");

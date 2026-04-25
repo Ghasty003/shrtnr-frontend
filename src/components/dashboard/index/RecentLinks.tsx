@@ -114,7 +114,7 @@ function LinkRow({ link, index }: { link: ShortUrl; index: number }) {
           </div>
           <div className="min-w-0">
             <div className="text-[13px] font-semibold text-white truncate">
-              shrt.nr/{link.short_code}
+              {import.meta.env.VITE_API_URL}/{link.short_code}
             </div>
             <div className="text-[11px] truncate mt-px text-muted">
               {link.long_url}
@@ -172,7 +172,7 @@ function LinkRow({ link, index }: { link: ShortUrl; index: number }) {
           </div>
           <div className="min-w-0">
             <div className="text-[13px] font-semibold text-white truncate">
-              shrt.nr/{link.short_code}
+              {import.meta.env.VITE_API_URL}/{link.short_code}
             </div>
             <div className="text-[11px] truncate mt-px text-muted">
               {link.long_url}

@@ -37,8 +37,16 @@ export default function PreferencesSection() {
   ];
 
   const domainOpts: { key: DomainFormat; label: string; example: string }[] = [
-    { key: "path", label: "Path", example: "shrtnr.com/abc" },
-    { key: "subdomain", label: "Subdomain", example: "abc.shrtnr.com" },
+    {
+      key: "path",
+      label: "Path",
+      example: `${import.meta.env.VITE_API_URL}/abc`,
+    },
+    {
+      key: "subdomain",
+      label: "Subdomain",
+      example: `abc.${import.meta.env.VITE_API_URL}`,
+    },
   ];
 
   const handleAutoCopyChange = (checked: boolean) => {
