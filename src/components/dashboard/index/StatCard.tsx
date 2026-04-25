@@ -49,7 +49,7 @@ export default function StatCard({
         {topRight}
       </div>
       <div className="mt-3.5">
-        <div className="text-[1.5rem] sm:text-[1.85rem] font-bold text-white leading-none">
+        <div className="text-[1.5rem] sm:text-[1.85rem] font-bold text-white leading-none truncate">
           {value}
         </div>
         <div className="text-[10.5px] font-semibold tracking-[0.12em] uppercase mt-1.25 text-muted">
